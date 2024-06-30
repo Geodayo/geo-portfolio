@@ -3,7 +3,7 @@ import { fn } from '@storybook/test';
 import { Server } from './server.component';
 
 const meta = {
-  title: 'Example/Server',
+  title: 'Components/Server',
   component: Server,
   // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
   tags: ['autodocs'],

@@ -23,8 +23,9 @@
   position: absolute;
   top: 50%;
   left: calc(100% + 20px);
+  z-index: 100;
   transform: translateY(-50%);
-  background-color: #2a2c30;
+  background-color: #111214;
   padding: 9px;
   border-radius: 6px;
 }
@@ -36,13 +37,15 @@
   top: 50%;  
   transform: translateY(-50%) rotate(-45deg);
   left: -4px;
+  z-index: 100;
   width: 8px;
   height: 8px;
-  background-color: #2a2c30;
+  background-color: #111214;
 }
 
 .text {
   display: block;
+  font-weight: 600;
   color: #d5d8db;
   white-space: nowrap;
 }

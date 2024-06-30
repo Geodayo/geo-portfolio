@@ -3,7 +3,7 @@ import { fn } from '@storybook/test';
 import { Channel } from './channel.component';
 
 const meta = {
-  title: 'Example/Channel',
+  title: 'Components/Channel',
   component: Channel,
   // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
   tags: ['autodocs'],

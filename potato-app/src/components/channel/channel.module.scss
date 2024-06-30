@@ -1,8 +1,30 @@
 .container {
+  position: relative;
+  cursor: pointer;
+}
+
+.container.disableHover {
+  pointer-events: none;
+
+  .text{
+    color: white;
+  }
 }
 
 
 .container:active::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  opacity: 0.2;
+}
+
+.active::after {
   content: "";
   display: block;
   position: absolute;
@@ -71,5 +93,15 @@
   text-overflow: ellipsis;
   font-size: 16px;
   line-height: 20px;
-  color: color-mix(in oklab, hsl(0 calc(1 * 0%) 100% / 1) 100%, black 0%);
+  color: color-mix( in oklab, hsl( 214 calc( 1 * 8.1%) 61.2% / 1) 100%, black 0% );
+}
+
+.container:hover {
+  .text {
+    color: color-mix( in oklab, hsl( 210 calc( 1 * 9.1%) 87.1% / 1) 100%, black 0% );
+  }
+}
+
+.active .text {
+  color: white !important;
 }

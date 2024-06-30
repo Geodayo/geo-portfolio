@@ -1,15 +1,27 @@
 import React from "react";
 import styles from "./channel.module.scss";
+import cx from "classnames";
 
 export interface ChannelProps {
   text: string;
-  active: boolean;
+  active?: boolean;
+  disableHover?: boolean;
   channelLink: string;
 }
 
-export const Channel = ({ text, channelLink }: ChannelProps) => {
+export const Channel = ({
+  text,
+  active,
+  channelLink,
+  disableHover,
+}: ChannelProps) => {
   return (
-    <div className={styles.container}>
+    <div
+      className={cx(styles.container, {
+        [styles.active]: active,
+        [styles.disableHover]: disableHover,
+      })}
+    >
       <a className={styles.link} href={channelLink}>
         <div className={styles.linkWrapper}>
           <div className={styles.waffle}>

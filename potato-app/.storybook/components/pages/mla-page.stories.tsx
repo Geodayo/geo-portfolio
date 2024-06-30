@@ -3,10 +3,10 @@ import { PageLayout } from "../../../src/components/page-layout/page-layout.comp
 import React from "react";
 
 const meta = {
-  title: "Pages/My Language App",
+  title: "Pages/Test Page",
   component: PageLayout,
   // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
-  tags: ["autodocs"],
+  tags: [],
   parameters: {
     // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
     layout: "fullscreen",

@@ -16,7 +16,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const server: Story = {
+export const ServerC: Story = {
   args: {
     name: "My Language App",
     thumbnail: "https://placekitten.com/200/300",

@@ -1,0 +1,107 @@
+.container {
+  position: relative;
+  cursor: pointer;
+}
+
+.container.disableHover {
+  pointer-events: none;
+
+  .text{
+    color: white;
+  }
+}
+
+
+.container:active::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  opacity: 0.2;
+}
+
+.active::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  opacity: 0.2;
+}
+
+.container:hover::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  opacity: 0.1;
+}
+
+.link {
+  cursor: pointer;
+  position: relative;
+  box-sizing: border-box;
+  padding: 6px 8px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+}
+
+.link:visited {
+  color: white;
+}
+
+// .link::before {
+//   content: '';
+//   display: block;
+//   position: absolute;
+//   top: -1px;
+//   right: 0;
+//   bottom: -1px;
+//   left: 0;
+// }
+
+.linkWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.waffle {
+  position: relative;
+  margin-right: 6px;
+  path {
+    fill: #80848e;
+  }
+}
+
+.text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 16px;
+  line-height: 20px;
+  color: color-mix( in oklab, hsl( 214 calc( 1 * 8.1%) 61.2% / 1) 100%, black 0% );
+}
+
+.container:hover {
+  .text {
+    color: color-mix( in oklab, hsl( 210 calc( 1 * 9.1%) 87.1% / 1) 100%, black 0% );
+  }
+}
+
+.active .text {
+  color: white !important;
+}

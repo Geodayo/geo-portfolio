@@ -1,0 +1,8 @@
+@import "init";
+
+:root {
+  @each $key, $color in $colors {
+    #{"--" + $key}: $color;
+    #{"--" + $key + "--rgb"}: #{derive-rgb-values-from-hex($color)};
+  }
+}

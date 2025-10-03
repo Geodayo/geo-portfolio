@@ -1,0 +1,89 @@
+.container {
+  width: 100%;
+}
+
+.listName {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.02em;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: color-mix(in oklab, hsl(214 calc(1 * 8.1%) 61.2% / 1) 100%, black 0%);
+}
+
+.list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: flex;
+    position: relative;
+    padding: 2px;
+    align-items: center;
+    cursor: pointer;
+    gap: 8px;
+    margin-top: 12px;
+    color: color-mix(
+      in oklab,
+      hsl(214 calc(1 * 8.1%) 61.2% / 1) 100%,
+      black 0%
+    );
+
+    svg {
+      margin-left: -2px;
+      width: 14px;
+      height: 14px;
+      color: color-mix(
+        in oklab,
+        hsl(40 calc(1 * 86.4%) 56.9% / 1) 100%,
+        black 0%
+      );
+    }
+  }
+
+  li:hover::after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    opacity: 0.1;
+  }
+}
+
+.thumbnail {
+  display: block;
+  position: relative;
+  width: 32px;
+  height: 32px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: border-radius 0.1s ease-out, color 0.1s ease-out;
+}
+
+.thumbnail::after {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid #2b2d31;
+  background-color: #3ea557;
+}

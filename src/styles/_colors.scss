@@ -1,0 +1,44 @@
+@use "sass:color";
+// $colors: (
+//   mla-black: #191B45,
+//   primary-background: color-mix( in oklab, hsl( 223 calc( 1 * 6.7%) 20.6% / 1) 100%, black 0% ),
+//   secondary-background: color-mix( in oklab, hsl( 220 calc( 1 * 6.5%) 18% / 1) 100%, black 0% ),
+//   secondary-alt-background: color-mix( in oklab, hsl( 228 calc( 1 * 6.7%) 14.7% / 1) 100%, black 0% )
+  
+//   );
+
+$colors: (
+  mla-black: #191B45,
+  primary-background: color.mix(black, hsl(223, 6.7%, 20.6%), 0%),
+  secondary-background: color.mix(black, hsl(220, 6.5%, 18%), 0%),
+  secondary-alt-background: color.mix(black, hsl(228, 6.7%, 14.7%), 0%)
+);
+
+  
+@function derive-rgb-values-from-hex($hex) {
+  @return color.channel($hex, "red", $space: rgb),
+         color.channel($hex, "green", $space: rgb),
+         color.channel($hex, "blue", $space: rgb);
+}
+
+@function color($key) {
+  @if map-has-key($colors, $key) {
+    @return var(--#{$key});
+  }
+
+  @warn "Unknown `#{$key}` in $colors.";
+  @return null;
+}
+
+@function color-rgb($key) {
+  @if map-has-key($colors, $key) {
+    @return var(--#{$key}--rgb);
+  }
+
+  @warn "Unknown `#{$key}` in $colors.";
+  @return null;
+}
+
+@function sup() {
+    @return #F46262;
+}

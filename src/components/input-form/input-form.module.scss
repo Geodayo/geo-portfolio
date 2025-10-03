@@ -1,0 +1,42 @@
+.container {
+  position: relative;
+  width: 100%;
+  cursor: pointer;
+}
+
+.container.disableForm {
+  .form {
+    input {
+      cursor: not-allowed;
+    }
+  }
+}
+
+.form {
+  input {
+    border: none;
+    box-sizing: border-box;
+    padding: 11px 16px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    // opacity: 0.5;
+    line-height: 1.375rem;
+    background-color: #34363c;
+    width: 100%;
+    border-radius: 8px;
+
+    &::placeholder {
+      font-size: 16px;
+      color: color-mix(
+        in oklab,
+        hsl(229 calc(1 * 4.8%) 44.9% / 1) 100%,
+        black 0%
+      );
+      opacity: 0.8;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+    "servers": [
+      {
+        "name": "My Language App",
+        "thumbnail": "https://placekittens.com/200/300",
+        "serverLink": "#",
+        "channels": [
+          {
+            "text": "general",
+            "active": true,
+            "channelLink": "#",
+            "messages": [
+              {
+                "headless": false,
+                "date": "June 14, 2024",
+                "messageText": [
+                  "This is the first line of this message",
+                  "This is more text to follow it"
+                ]
+              },
+              {
+                "headless": false,
+                "date": "June 14, 2024",
+                "type": "image",
+                "image": "/totoro-profile.jpg"
+              }
+            ]
+          },
+          {
+            "text": "Front End",
+            "active": false,
+            "channelLink": "#",
+            "messages": []
+          },
+          {
+            "text": "Back End",
+            "active": false,
+            "channelLink": "#",
+            "messages": []
+          }
+        ],
+        "users": {}
+      },
+      {
+        "name": "Design Portfolio",
+        "thumbnail": "https://placekittens.com/200/300",
+        "serverLink": "#",
+        "channels": [],
+        "users": {}
+      }
+    ]
+  }
+  

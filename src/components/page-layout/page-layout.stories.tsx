@@ -19,112 +19,109 @@ export const PageLayoutPreview: Story = {
   args: {
     servers: [
       {
+        slug: "my-language-app",
         name: "My Language App",
         thumbnail: "https://placekittens.com/200/300",
-        serverLink: () => console.log("clicked"),
-        channels: [
-          {
-            text: "general",
-            active: true,
-            messages: [
-              {
-                headless: false,
-                date: "June 14, 2024",
-                messageText: [
-                  "This is the first like of this message",
-                  "This is more Text to follow it",
-                ],
-              },
-              {
-                headless: false,
-                date: "June 14, 2024",
-                type: "image",
-                image: "./totoro-profile.jpg",
-              },
-              {
-                messageText: [
-                  "This is the Second of this message",
-                  "This is more Text to follow it",
-                ],
-              },
-              {
-                type: "image",
-                image: "./totoro-profile.jpg",
-              },
-              {
-                headless: false,
-                date: "June 14, 2024",
-                messageText: [
-                  "This is the first like of this message",
-                  "This is more Text to follow it",
-                  "This is more Text to follow it",
-                ],
-              },
-              {
-                headless: false,
-                date: "June 14, 2024",
-                type: "image",
-                image: "./totoro-profile.jpg",
-              },
-              {
-                messageText: [
-                  "This is the Second of this message",
-                  "This is more Text to follow it",
-                ],
-              },
-              {
-                type: "image",
-                image: "./totoro-profile.jpg",
-              },
-              {
-                headless: false,
-                date: "June 14, 2024",
-                messageText: [
-                  "This is the first like of this message",
-                  "This is more Text to follow it",
-                ],
-              },
-              {
-                headless: false,
-                date: "June 14, 2024",
-                type: "image",
-                image: "./totoro-profile.jpg",
-              },
-              {
-                messageText: [
-                  "This is the Second of this message",
-                  "This is more Text to follow it",
-                ],
-              },
-              {
-                type: "image",
-                image: "./totoro-profile.jpg",
-              },
-            ],
-          },
-          {
-            text: "Front End",
-            active: false,
-          },
-          {
-            text: "Back End",
-            active: false,
-          },
-        ],
-        users: {},
       },
       {
+        slug: "design-portfolio",
         name: "Design Portfolio",
         thumbnail: "https://placekittens.com/200/300",
-        serverLink: () => console.log("clicked"),
-        channels: [
-          {
-            text: "general",
-            active: true,
-          },
-        ],
-        users: {},
       },
     ],
+    activeServerSlug: "my-language-app",
+    onSelectServer: (slug) => console.log("selected", slug),
+    activeServerData: {
+      channels: [
+        {
+          text: "general",
+          active: true,
+          messages: [
+            {
+              headless: false,
+              date: "June 14, 2024",
+              messageText: [
+                "This is the first like of this message",
+                "This is more Text to follow it",
+              ],
+            },
+            {
+              headless: false,
+              date: "June 14, 2024",
+              type: "image",
+              image: "./totoro-profile.jpg",
+            },
+            {
+              messageText: [
+                "This is the Second of this message",
+                "This is more Text to follow it",
+              ],
+            },
+            {
+              type: "image",
+              image: "./totoro-profile.jpg",
+            },
+            {
+              headless: false,
+              date: "June 14, 2024",
+              messageText: [
+                "This is the first like of this message",
+                "This is more Text to follow it",
+                "This is more Text to follow it",
+              ],
+            },
+            {
+              headless: false,
+              date: "June 14, 2024",
+              type: "image",
+              image: "./totoro-profile.jpg",
+            },
+            {
+              messageText: [
+                "This is the Second of this message",
+                "This is more Text to follow it",
+              ],
+            },
+            {
+              type: "image",
+              image: "./totoro-profile.jpg",
+            },
+            {
+              headless: false,
+              date: "June 14, 2024",
+              messageText: [
+                "This is the first like of this message",
+                "This is more Text to follow it",
+              ],
+            },
+            {
+              headless: false,
+              date: "June 14, 2024",
+              type: "image",
+              image: "./totoro-profile.jpg",
+            },
+            {
+              messageText: [
+                "This is the Second of this message",
+                "This is more Text to follow it",
+              ],
+            },
+            {
+              type: "image",
+              image: "./totoro-profile.jpg",
+            },
+          ],
+        },
+        {
+          text: "Front End",
+          active: false,
+        },
+        {
+          text: "Back End",
+          active: false,
+        },
+      ],
+      users: {},
+    },
   },
 };

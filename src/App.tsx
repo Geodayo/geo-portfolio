@@ -1,13 +1,15 @@
 import './App.css'
 import './styles/global.scss'
+import { Route, Routes } from 'react-router-dom'
 import { FrontPage } from './containers/front page/front-page.containers.tsx'
 
 function App() {
 
   return (
-    <>
-      <FrontPage />
-    </>
+    <Routes>
+      <Route path="/" element={<FrontPage />} />
+      <Route path="/:serverSlug" element={<FrontPage />} />
+    </Routes>
   )
 }
 

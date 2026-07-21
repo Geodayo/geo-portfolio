@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./page-layout.module.scss";
 import { Server} from "../server/server.component";
 import { Message, type MessageProps } from "../message/message.component";
@@ -10,25 +10,59 @@ import { InputForm } from "../input-form/input-form.component";
 import { UsersList, type UsersListProps } from "../users-list/users-list.component";
 import cx from "clsx";
 
-export interface PageLayoutProps {
-  servers: {
-    name: string;
-    thumbnail: string;
-    serverLink: () => void;
-    channels: {
-      text: string;
-      active: boolean;
-      channelLink?: () => void;
-      messages?: MessageProps[];
-    }[];
-    users: UsersListProps;
-  }[];
+export interface ServerSummary {
+  slug: string;
+  name: string;
+  thumbnail: string;
 }
 
-export const PageLayout = ({ servers }: PageLayoutProps) => {
+export interface ServerChannel {
+  text: string;
+  active: boolean;
+  messages?: MessageProps[];
+}
+
+export interface ServerDetailData {
+  channels: ServerChannel[];
+  users?: UsersListProps;
+}
+
+export interface PageLayoutProps {
+  servers: ServerSummary[];
+  activeServerSlug: string | null;
+  activeServerData: ServerDetailData | null;
+  onSelectServer: (slug: string | null) => void;
+}
+
+const homeChannels: ServerChannel[] = [
+  {
+    text: "general",
+    active: true,
+    messages: [
+      {
+        messageText: [
+          "Hi, I'm Geo, welcome to my portfolio.",
+          "This site is styled like a chat app, each server on the left is a project I've worked on.",
+          "Pick one to see the story, screenshots, and tech behind it.",
+        ],
+      },
+    ],
+  },
+];
+
+export const PageLayout = ({ servers, activeServerSlug, activeServerData, onSelectServer }: PageLayoutProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [activeServer, setActiveServer] = useState(servers[0]);
-  const [activeChannel, setActiveChannel] = useState(activeServer.channels[0]);
+  const isHome = activeServerSlug === null;
+  const channels = isHome ? homeChannels : activeServerData?.channels ?? [];
+  const [activeChannel, setActiveChannel] = useState<ServerChannel | undefined>(channels[0]);
+
+  useEffect(() => {
+    setActiveChannel(isHome ? homeChannels[0] : activeServerData?.channels[0]);
+  }, [isHome, activeServerData]);
+
+  const activeServerName = isHome
+    ? "Front Page"
+    : servers.find((server) => server.slug === activeServerSlug)?.name ?? "";
 
   return (
     <div className={styles.container}>
@@ -38,22 +72,19 @@ export const PageLayout = ({ servers }: PageLayoutProps) => {
             <Server
               name={"Front Page"}
               thumbnail={"./discord-temp-icon.jpg"}
-              serverLink={() => console.log("home")}
+              serverLink={() => onSelectServer(null)}
             ></Server>
           </div>
           {servers.map((server) => {
             return (
               <div
                 className={styles.serversWrapper}
-                key={`server-${server.name}`}
+                key={`server-${server.slug}`}
               >
                 <Server
                   name={server.name}
                   thumbnail={server.thumbnail}
-                  serverLink={() => {
-                    setActiveServer(server);
-                    setActiveChannel(server.channels[0]);
-                  }}
+                  serverLink={() => onSelectServer(server.slug)}
                 ></Server>
               </div>
             );
@@ -61,7 +92,7 @@ export const PageLayout = ({ servers }: PageLayoutProps) => {
         </div>
         <div className={styles.channelColumn}>
           <div className={styles.channelHeader}>
-            {activeServer.name}
+            {activeServerName}
             <div
               className={styles.arrowIcon}
               onClick={() => setMobileOpen(!mobileOpen)}
@@ -72,9 +103,10 @@ export const PageLayout = ({ servers }: PageLayoutProps) => {
             </div>
           </div>
           <div className={styles.channelLists}>
-            {activeServer.channels && (
+            {channels.length > 0 && (
               <ChannelList
-                channels={activeServer.channels.map((channel) => ({
+                key={activeServerSlug}
+                channels={channels.map((channel) => ({
                   ...channel,
                   channelLink: () => setActiveChannel(channel),
                 }))}
@@ -100,19 +132,18 @@ export const PageLayout = ({ servers }: PageLayoutProps) => {
           <Channel
             active={false}
             disableHover={true}
-            text={activeChannel.text}
+            text={activeChannel?.text ?? ""}
             channelLink={() => void 0}
           ></Channel>
         </div>
         <div className={styles.messagesWrapper}>
-          {activeChannel.messages &&
-            activeChannel.messages.map((message, index2) => {
-              return (
-                <div key={`message-${index2}`}>
-                  <Message {...message}></Message>
-                </div>
-              );
-            })}
+          {activeChannel?.messages?.map((message, index2) => {
+            return (
+              <div key={`message-${index2}`}>
+                <Message {...message}></Message>
+              </div>
+            );
+          })}
         </div>
         <div className={styles.messageFooter}>
           <InputForm disableForm={true}></InputForm>
@@ -120,8 +151,8 @@ export const PageLayout = ({ servers }: PageLayoutProps) => {
       </div>
       <div className={styles.usersColumn}>
         <div className={styles.usersLists}>
-          {activeServer.users && (
-            <UsersList {...activeServer.users}></UsersList>
+          {activeServerData?.users && (
+            <UsersList {...activeServerData.users}></UsersList>
           )}
         </div>
       </div>

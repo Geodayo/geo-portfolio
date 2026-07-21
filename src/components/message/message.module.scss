@@ -79,6 +79,7 @@
   background-repeat: no-repeat;
   background-position: center center;
   border-radius: 50%;
+  flex-shrink: 0;
   cursor: pointer;
 
   margin: 0 16px;
@@ -90,6 +91,14 @@
   flex-direction: column;
   flex-wrap: nowrap;
   z-index: 20;
+}
+
+.link {
+  color: oklab(89.9401% -0.00192499 -0.00481987);
+  text-decoration: underline;
+  &:hover {
+    text-decoration: none;
+  }
 }
 
 .profileName {

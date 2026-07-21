@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { PageLayout, type PageLayoutProps } from "../../components/page-layout/page-layout.component";
+import { PageFrame } from "../../components/page-frame/page-frame.component";
 
 // export interface FrontPageProps {}
 
@@ -16,7 +17,9 @@ export function FrontPage() {
 
     return (
         <>
+        <PageFrame headerTitle="Geo Portfolio">
         {data && <PageLayout {...data}></PageLayout>}
+        </PageFrame>
         </>
     )
 

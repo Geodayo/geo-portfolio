@@ -1,0 +1,54 @@
+.container {
+  width: 100%;
+  margin: 16px 0;
+  min-width: 250px;
+
+  @media (min-width: 768px) {
+    min-width: 600px;
+  }
+}
+
+.videoWrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: color-mix(
+    in oklab,
+    hsl(228 calc(1 * 6%) 14.7% / 1) 100%,
+    black 0%
+  );
+}
+
+.video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 8px;
+}
+
+.error {
+  padding: 16px;
+  color: color-mix(
+    in oklab,
+    hsl(0 calc(1 * 84.2%) 60.2% / 1) 100%,
+    black 0%
+  );
+  background-color: color-mix(
+    in oklab,
+    hsl(0 calc(1 * 84.2%) 60.2% / 0.1) 100%,
+    black 0%
+  );
+  border-radius: 8px;
+  border: 1px solid color-mix(
+    in oklab,
+    hsl(0 calc(1 * 84.2%) 60.2% / 0.3) 100%,
+    black 0%
+  );
+}
+

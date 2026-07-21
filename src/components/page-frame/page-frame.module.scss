@@ -1,0 +1,53 @@
+.container {
+    width: 100vw;
+    height: 100vh;
+}
+
+.frame {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.frameContent {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+.frameHeader {
+    display: none;
+}
+
+@media (min-width: 1921px) {
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;  
+        width: 100vw;
+        height: 100vh;
+      }
+      
+      .frameHeader {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 100%;
+          height: 32px;
+          background-color: color-mix(in oklab, hsl(228, 6.7%, 14.7%) 100%, black 0%);
+          
+          color: color-mix(in oklab, hsl(220, 13%, 95.5%) 100%, black 0%);
+          font-size: 16px;
+      }
+      
+      .frame {
+          width: 1920px;
+          height: 1080px;
+          box-sizing: border-box;
+      }
+      
+      .frameContent {
+          width: 100%;
+          height: 100%;
+          box-sizing: border-box;
+      }
+}

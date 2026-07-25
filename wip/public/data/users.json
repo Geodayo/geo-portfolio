@@ -1,0 +1,52 @@
+{
+  "geo": {
+    "displayName": "Geo",
+    "username": "#geodesu",
+    "avatar": "/totoro-profile.jpg",
+    "bannerColor": "#5865f2",
+    "status": "online",
+    "mutualServers": 2,
+    "bio": [
+      "Software Engineer who builds websites, web apps, and custom tooling for design studios, startups, and agencies.",
+      "Working with Cynda Media Lab since 2019."
+    ],
+    "links": [
+      "https://www.linkedin.com/in/not-jorge-mendez/",
+      "https://github.com/Geodayo"
+    ],
+    "customStatus": {
+      "text": "Building cool things",
+      "emoji": "💻",
+      "color": "#3ea557"
+    },
+    "disableMessage": true
+  },
+  "geobot": {
+    "displayName": "GeoBot",
+    "username": "#geobot",
+    "avatar": "/bot-icon.svg",
+    "bannerColor": "#5865f2",
+    "status": "online",
+    "mutualServers": 2,
+    "bio": [
+      "I'm GeoBot, an AI assistant trained on Geo's portfolio. Ask me anything about Geo's projects, background, or skills!"
+    ],
+    "customStatus": {
+      "text": "Always online",
+      "emoji": "🤖",
+      "color": "#3ea557"
+    },
+    "disableMessage": true
+  },
+  "anonymous": {
+    "displayName": "Anonymous",
+    "username": "#visitor",
+    "avatar": "/anonymous-icon.svg",
+    "bannerColor": "#6b7280",
+    "status": "online",
+    "bio": [
+      "That's you! Messages you send in this chat show up as Anonymous since this is a public portfolio."
+    ],
+    "disableMessage": true
+  }
+}

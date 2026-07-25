@@ -1,0 +1,24 @@
+{
+  "bio": [
+    "Geo is a freelance developer who builds websites, web apps, and custom tooling for design studios, startups, and agencies.",
+    "Since 2019, Geo has worked with Cynda Media Lab, a transdisciplinary design studio, building and maintaining sites and educational tools for clients like MIT, FIT, and AFFOA.",
+    "Geo has also worked with Fabric Ventures, migrating and building pages in Webflow and shipping an AI-powered search agent for their site, deployed on Vercel."
+  ],
+  "skills": [
+    "React",
+    "TypeScript",
+    "Node.js / Express",
+    "MongoDB",
+    "Vite",
+    "Storybook",
+    "Jest",
+    "WordPress (custom blocks and themes)",
+    "Gatsby",
+    "Webflow (incl. CMS)",
+    "Building and deploying AI-powered features (e.g. RAG search agents)",
+    "Responsive, component-driven UI design"
+  ],
+  "contact": {
+    "email": "george.pikachu@gmail.com"
+  }
+}

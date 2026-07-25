@@ -1,0 +1,37 @@
+@use "sass:color";
+
+$colors: (
+  mla-black: #191B45,
+  primary-background: color.mix(black, hsl(222, 4%, 18.5%), 0%),
+  secondary-background: color.mix(black, hsl(225, 4%, 15%), 0%),
+  secondary-alt-background: color.mix(black, hsl(228, 3%, 11%), 0%)
+);
+
+
+@function derive-rgb-values-from-hex($hex) {
+  @return color.channel($hex, "red", $space: rgb),
+         color.channel($hex, "green", $space: rgb),
+         color.channel($hex, "blue", $space: rgb);
+}
+
+@function color($key) {
+  @if map-has-key($colors, $key) {
+    @return var(--#{$key});
+  }
+
+  @warn "Unknown `#{$key}` in $colors.";
+  @return null;
+}
+
+@function color-rgb($key) {
+  @if map-has-key($colors, $key) {
+    @return var(--#{$key}--rgb);
+  }
+
+  @warn "Unknown `#{$key}` in $colors.";
+  @return null;
+}
+
+@function sup() {
+    @return #F46262;
+}

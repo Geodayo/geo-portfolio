@@ -1,0 +1,36 @@
+@use "init" as *;
+@use "colors" as *;
+
+:root {
+  @each $key, $color in $colors {
+    #{"--" + $key}: $color;
+    #{"--" + $key + "--rgb"}: #{derive-rgb-values-from-hex($color)};
+  }
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+//FONTS
+@font-face {
+  font-family: "--gg-sans";
+  src: url("/fonts/gg-sans-regular-webfont.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "--gg-sans";
+  src: url("/fonts/gg-sans-regular-webfont.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+}
+
+body {
+  font-family: "--gg-sans", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}

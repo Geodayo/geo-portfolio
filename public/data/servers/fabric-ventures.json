@@ -1,0 +1,49 @@
+{
+  "channels": [
+    {
+      "text": "general",
+      "active": true,
+      "messages": [
+        {
+          "headless": false,
+          "date": "Jul 01, 2025",
+          "messageText": [
+            "I migrated some static pages to Webflow, rebuilding existing pages and developing new ones from provided designs and integrating Webflow CMS to enable dynamic content management.",
+            "",
+            "Built an AI-powered search page that uses the full website as a knowledge base to deliver accurate, context-aware responses. The AI agent was developed and deployed on Vercel and embedded directly into the Webflow search page.",
+            "Visit the live website at https://www.fabric.vc/"
+          ]
+        },
+        {
+          "headless": true,
+          "date": "Nov 11, 2025",
+          "type": "gallery",
+          "gallery": [
+            "/images/fabricventures_1.png",
+            "/images/fabricventures_2.png",
+            "/images/fabricventures_3.png",
+            "/images/fabricventures_4.png",
+            "/images/fabricventures_5.png",
+            "/images/fabricventures_6.png"
+          ]
+        },
+        {
+          "headless": false,
+          "date": "Nov 11, 2025",
+          "messageText": [
+            "The pages are responsive and has many animations and hover effects to make the user experience more engaging and interactive."
+          ]
+        },
+        {
+          "headless": false,
+          "date": "Dec 10, 2025",
+          "messageText": [
+            "I built an AI-powered search page that uses the full website as a knowledge base to deliver accurate, context-aware responses.",
+            "The AI agent was developed and deployed on Vercel and embedded directly into the Webflow search page."
+          ]
+        }
+      ]
+    }
+  ],
+  "users": {}
+}

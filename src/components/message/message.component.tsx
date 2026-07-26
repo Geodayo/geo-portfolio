@@ -31,6 +31,14 @@ export interface MessageProps {
    * just give it a matching `id` somewhere in the tree.
    */
   pointerTarget?: string;
+  /**
+   * DOM `id` to put on this message's avatar. Only used by PageLayout: when
+   * this message is the one that triggered the pointer line (see
+   * pointerTarget above), it gives the avatar a matching id so
+   * usePointerTarget can find it and draw the line starting from here
+   * instead of a fixed spot.
+   */
+  avatarId?: string;
 }
 
 export const Message = ({
@@ -45,6 +53,7 @@ export const Message = ({
   gallery,
   video,
   messageText,
+  avatarId,
 }: MessageProps) => {
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     onProfileClick?.(userId, event.currentTarget.getBoundingClientRect());
@@ -59,6 +68,7 @@ export const Message = ({
       )}
       <div className={styles.content}>
         <div
+          id={avatarId}
           className={styles.thumbnail}
           style={{ backgroundImage: `url(${profileThumbnail})` }}
           onClick={handleProfileClick}

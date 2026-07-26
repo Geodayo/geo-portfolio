@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./page-layout.module.scss";
 import { Server} from "../server/server.component";
 import { Message, type MessageProps } from "../message/message.component";
-import { Arrow, ARROW_TIP } from "../arrow/arrow.component";
+import { PointerLine } from "../pointer-line/pointer-line.component";
 import { Channel } from "../channel/channel.component";
 import {
   ChannelList
@@ -198,18 +198,31 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
   // its staged reveal, or a live GeoBot reply that opted into a pointer via
   // a [[point: ...]] tag (see extractPointerTag/resolvePointerTarget in
   // src/lib/knowledge.ts) — check if it called out a pointer target and, if
-  // so, aim the arrow at it. `pointerCue` uses
-  // an incrementing key (not just the target id) so the un-dismiss/retimer
+  // so, draw the line from that exact message's avatar to it. `sourceIndex`
+  // pins down which message in `displayedMessages` triggered this cue: new
+  // messages only ever get appended (never inserted before it), so the
+  // index stays valid even after later messages arrive. `key` is a separate
+  // incrementing counter (not just the target id) so the un-dismiss/retimer
   // effect below still fires even if the same target gets pointed at twice
   // in a row.
-  const [pointerCue, setPointerCue] = useState<{ targetId: string; key: number } | null>(null);
+  const [pointerCue, setPointerCue] = useState<{
+    targetId: string;
+    sourceIndex: number;
+    key: number;
+  } | null>(null);
   const pointerCueCounter = useRef(0);
+  const POINTER_SOURCE_ID = "pointer-source-avatar";
 
   useEffect(() => {
-    const lastMessage = displayedMessages[displayedMessages.length - 1];
+    const sourceIndex = displayedMessages.length - 1;
+    const lastMessage = displayedMessages[sourceIndex];
     if (lastMessage?.pointerTarget) {
       pointerCueCounter.current += 1;
-      setPointerCue({ targetId: lastMessage.pointerTarget, key: pointerCueCounter.current });
+      setPointerCue({
+        targetId: lastMessage.pointerTarget,
+        sourceIndex,
+        key: pointerCueCounter.current,
+      });
       setPointerDismissed(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -222,16 +235,42 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
     setPointerDismissed(false);
   }, [activeChannel]);
 
-  const pointerTargetPoint = usePointerTarget(containerRef, pointerCue?.targetId ?? null);
+  const pointerTargetPoint = usePointerTarget(
+    containerRef,
+    pointerCue?.targetId ?? null,
+    pointerCue?.key
+  );
   // usePointerTarget gives the target's dead center, which tends to look
-  // like the arrow is stabbing right into the icon. Nudge the landing spot
-  // up and to the right instead, toward the edge the arrow is approaching
-  // from, so it reads as "pointing at" rather than "landing on".
-  const POINTER_LANDING_OFFSET = { x: 24, y: -10 };
+  // like the line is stabbing right into the icon. Nudge the landing spot
+  // to the right instead (vertically centered), toward the edge the line
+  // is approaching from (see PointerLine's END_TANGENT, which always
+  // arrives heading left), so it reads as "pointing at" rather than
+  // "landing on".
+  const POINTER_LANDING_OFFSET = { x: 24, y: 0 };
   const arrowLandingPoint = pointerTargetPoint
     ? {
         x: pointerTargetPoint.x + POINTER_LANDING_OFFSET.x,
         y: pointerTargetPoint.y + POINTER_LANDING_OFFSET.y,
+      }
+    : null;
+  // The other end of the line — the avatar of whichever message triggered
+  // this cue (see POINTER_SOURCE_ID above, and the avatarId passed to
+  // <Message> below).
+  const pointerSourcePoint = usePointerTarget(
+    containerRef,
+    pointerCue ? POINTER_SOURCE_ID : null,
+    pointerCue?.key
+  );
+  // Same idea as POINTER_LANDING_OFFSET, but for the start of the line —
+  // starting exactly at the avatar's dead center makes it look like the
+  // line is glued to the icon. Nudging it straight up instead starts the
+  // line from the top-middle of the avatar, which also matches the line
+  // always leaving heading straight up (see PointerLine's START_TANGENT).
+  const POINTER_SOURCE_OFFSET = { x: 0, y: -22 };
+  const pointerLineStart = pointerSourcePoint
+    ? {
+        x: pointerSourcePoint.x + POINTER_SOURCE_OFFSET.x,
+        y: pointerSourcePoint.y + POINTER_SOURCE_OFFSET.y,
       }
     : null;
 
@@ -244,7 +283,8 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
     return () => clearTimeout(timeout);
   }, [pointerCue]);
 
-  const showPointerArrow = Boolean(arrowLandingPoint) && !pointerDismissed;
+  const showPointerArrow =
+    Boolean(arrowLandingPoint) && Boolean(pointerLineStart) && !pointerDismissed;
 
   const handleSendMessage = async (text: string) => {
     const key = channelKey;
@@ -332,19 +372,11 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
 
   return (
     <div className={styles.container} ref={containerRef}>
-      {arrowLandingPoint && (
-        <Arrow
+      {arrowLandingPoint && pointerLineStart && (
+        <PointerLine
           className={cx(styles.pointerArrow, { [styles.pointerArrowHidden]: !showPointerArrow })}
-          // The base shape approaches its tip from almost directly above
-          // (tail sits up-and-slightly-right of the tip). Since rotation
-          // pivots around the tip itself, rotating further flattens the
-          // arc so it reads as coming in from the side at roughly the same
-          // height as the target, instead of arcing down from above it.
-          rotate={95}
-          style={{
-            top: arrowLandingPoint.y - ARROW_TIP.y,
-            left: arrowLandingPoint.x - ARROW_TIP.x,
-          }}
+          from={pointerLineStart}
+          to={arrowLandingPoint}
         />
       )}
       <div className={styles.navigationColumn}>
@@ -437,7 +469,11 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
           {displayedMessages.map((message, index2) => {
             return (
               <div key={`message-${index2}`}>
-                <Message {...message} onProfileClick={handleProfileClick}></Message>
+                <Message
+                  {...message}
+                  avatarId={index2 === pointerCue?.sourceIndex ? POINTER_SOURCE_ID : undefined}
+                  onProfileClick={handleProfileClick}
+                ></Message>
               </div>
             );
           })}

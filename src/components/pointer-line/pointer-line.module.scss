@@ -1,0 +1,30 @@
+.pointerLine {
+  display: block;
+  opacity: 0.85;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+  animation: pointerLineIn 0.3s ease-out;
+}
+
+// Dashed "marching ants" look on the curve itself only — the arrowhead
+// stays solid/static so it doesn't look like it's crawling off the target.
+.line {
+  stroke-dasharray: 10 8;
+  animation: pointerDashMarch 1s linear infinite;
+}
+
+@keyframes pointerLineIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.85;
+  }
+}
+
+@keyframes pointerDashMarch {
+  to {
+    // One full dash+gap cycle (10 + 8 = 18) doubled, so the loop point is
+    // seamless regardless of direction.
+    stroke-dashoffset: -36;
+  }
+}

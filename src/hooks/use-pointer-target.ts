@@ -14,10 +14,19 @@ export interface PointerTargetPoint {
  *
  * Pass `null` for targetId to skip measuring (e.g. while the pointer
  * shouldn't be shown yet).
+ *
+ * `remeasureKey` is for the case where the SAME id gets reassigned to a
+ * DIFFERENT DOM node between calls (e.g. PageLayout's pointer-source avatar
+ * id, which moves to whichever message most recently triggered a pointer
+ * cue) — since the effect below only re-runs when its dependencies change,
+ * and `targetId` alone wouldn't change in that case, pass something that
+ * changes every time the underlying element might have (e.g. an
+ * incrementing counter) to force a fresh measurement.
  */
 export function usePointerTarget(
   containerRef: RefObject<HTMLElement | null>,
-  targetId: string | null
+  targetId: string | null,
+  remeasureKey?: string | number
 ): PointerTargetPoint | null {
   const [point, setPoint] = useState<PointerTargetPoint | null>(null);
 
@@ -53,7 +62,7 @@ export function usePointerTarget(
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", measure);
     };
-  }, [containerRef, targetId]);
+  }, [containerRef, targetId, remeasureKey]);
 
   return point;
 }

@@ -9,6 +9,11 @@ export const runtime = "nodejs";
 
 const MAX_MESSAGE_LENGTH = 500;
 const MAX_TOKENS = 300;
+// How many prior turns of a conversation we'll forward to the model. Chat
+// Completions APIs are stateless — the model only knows what's in this
+// request's `messages` array — so without forwarding history, every message
+// looks like the start of a brand new conversation to it.
+const MAX_HISTORY_MESSAGES = 20;
 const GATEWAY_URL = "https://ai-gateway.vercel.sh/v1/chat/completions";
 // Override with the AI_GATEWAY_MODEL env var once you've picked a model in
 // the Vercel dashboard (creator/model-name, e.g. "anthropic/claude-haiku-4.5").
@@ -55,6 +60,22 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const rawHistory = Array.isArray(body.history) ? body.history : [];
+  const history = rawHistory
+    .filter(
+      (entry): entry is { role: "user" | "assistant"; content: string } =>
+        typeof entry === "object" &&
+        entry !== null &&
+        (entry.role === "user" || entry.role === "assistant") &&
+        typeof entry.content === "string" &&
+        entry.content.trim().length > 0
+    )
+    .slice(-MAX_HISTORY_MESSAGES)
+    .map((entry) => ({
+      role: entry.role,
+      content: entry.content.slice(0, MAX_MESSAGE_LENGTH),
+    }));
+
   try {
     const gatewayResponse = await fetch(GATEWAY_URL, {
       method: "POST",
@@ -67,6 +88,7 @@ export async function POST(req: NextRequest) {
         max_tokens: MAX_TOKENS,
         messages: [
           { role: "system", content: getSystemPrompt() },
+          ...history,
           { role: "user", content: message },
         ],
       }),

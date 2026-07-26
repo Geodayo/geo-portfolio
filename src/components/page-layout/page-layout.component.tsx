@@ -9,7 +9,7 @@ import {
 import { InputForm } from "../input-form/input-form.component";
 import { UsersList, type UsersListProps } from "../users-list/users-list.component";
 import { UserProfile, type UserProfileProps } from "../user-profile/user-profile.component";
-import { sendChatMessage } from "../../services/chat-api";
+import { sendChatMessage, type ChatHistoryMessage } from "../../services/chat-api";
 import cx from "clsx";
 
 type UserProfileData = Omit<UserProfileProps, "onSendMessage" | "onClose">;
@@ -158,6 +158,17 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
   const handleSendMessage = async (text: string) => {
     const key = channelKey;
 
+    // Snapshot the conversation so far (before this new message) so it can
+    // be forwarded to the assistant — the API itself has no memory between
+    // requests, so without this every message would look like the start of
+    // a brand new conversation to it.
+    const history: ChatHistoryMessage[] = (sentMessages[key] ?? [])
+      .filter((entry) => entry.messageText?.length)
+      .map((entry) => ({
+        role: entry.userId === "geobot" ? "assistant" : "user",
+        content: entry.messageText!.join(" "),
+      }));
+
     setSentMessages((prev) => ({
       ...prev,
       [key]: [
@@ -173,7 +184,7 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
     setPendingReplies((prev) => ({ ...prev, [key]: true }));
 
     try {
-      const reply = await sendChatMessage(text);
+      const reply = await sendChatMessage(text, history);
       setSentMessages((prev) => ({
         ...prev,
         [key]: [

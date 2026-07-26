@@ -2,11 +2,19 @@ export interface ChatApiError {
   error: string;
 }
 
-export async function sendChatMessage(message: string): Promise<string> {
+export interface ChatHistoryMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export async function sendChatMessage(
+  message: string,
+  history: ChatHistoryMessage[] = []
+): Promise<string> {
   const response = await fetch("/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message }),
+    body: JSON.stringify({ message, history }),
   });
 
   const data = await response.json().catch(() => null);

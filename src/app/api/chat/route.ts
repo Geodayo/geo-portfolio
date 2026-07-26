@@ -91,6 +91,10 @@ export async function POST(req: NextRequest) {
                 .filter((c): c is string => typeof c === "string")
                 .slice(0, 20))
             : [],
+          channelName:
+            typeof (rawContext as { channelName?: unknown }).channelName === "string"
+              ? (rawContext as { channelName: string }).channelName.slice(0, 100)
+              : "",
         }
       : null;
   const contextNote = buildContextNote(context);

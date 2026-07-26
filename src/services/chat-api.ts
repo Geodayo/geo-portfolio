@@ -25,6 +25,9 @@ export interface ChatPageContext {
   /** Display names of that page's channels, e.g. ["general", "Components"],
    * so a reply mentioning one can be matched back to its id. */
   channels: string[];
+  /** Display name of the specific channel the visitor is looking at right
+   * now, e.g. "Components". Lets the model know what "this channel" means. */
+  channelName: string;
 }
 
 export async function sendChatMessage(

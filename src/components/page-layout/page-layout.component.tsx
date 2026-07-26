@@ -68,20 +68,43 @@ export interface PageLayoutProps {
   activeServerSlug: string | null;
   activeServerData: ServerDetailData | null;
   frontPageData: ServerDetailData | null;
+  /** Channel to open on load, from the /[serverSlug]/[channelSlug] route —
+   * matched against each channel's slugifyChannelText(text). Null falls
+   * back to the channel flagged `active: true` in the data (or the first
+   * one). Ignored on the Front Page, which has no channel route. */
+  initialChannelSlug: string | null;
   onSelectServer: (slug: string | null) => void;
+  /** Called when the visitor picks a different channel, so the container
+   * can reflect it in the URL (e.g. router.push(`/${slug}/${channelSlug}`)). */
+  onSelectChannel: (channelSlug: string) => void;
 }
 
 const BOT_NAME = "GeoBot";
 const BOT_THUMBNAIL = "/bot-icon.svg";
 const ANONYMOUS_THUMBNAIL = "/anonymous-icon.svg";
 
-export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontPageData, onSelectServer }: PageLayoutProps) => {
+function findInitialChannel(
+  channels: ServerChannel[],
+  initialChannelSlug: string | null
+): ServerChannel | undefined {
+  if (initialChannelSlug) {
+    const match = channels.find(
+      (channel) => slugifyChannelText(channel.text) === initialChannelSlug
+    );
+    if (match) return match;
+  }
+  return channels.find((channel) => channel.active) ?? channels[0];
+}
+
+export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontPageData, initialChannelSlug, onSelectServer, onSelectChannel }: PageLayoutProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const messagesWrapperRef = useRef<HTMLDivElement>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const isHome = activeServerSlug === null;
   const channels = isHome ? frontPageData?.channels ?? [] : activeServerData?.channels ?? [];
-  const [activeChannel, setActiveChannel] = useState<ServerChannel | undefined>(channels[0]);
+  const [activeChannel, setActiveChannel] = useState<ServerChannel | undefined>(
+    findInitialChannel(channels, initialChannelSlug)
+  );
   const [sentMessages, setSentMessages] = useState<Record<string, MessageProps[]>>({});
   const [pendingReplies, setPendingReplies] = useState<Record<string, boolean>>({});
   const [profiles, setProfiles] = useState<Record<string, UserProfileData> | null>(null);
@@ -90,9 +113,18 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
   const [isStagingMessages, setIsStagingMessages] = useState(false);
   const [pointerDismissed, setPointerDismissed] = useState(false);
 
+  // Re-derives the active channel whenever the server data changes (e.g.
+  // switching servers) or the URL's channel slug changes (e.g. browser
+  // back/forward between two channels of the same server, or a direct
+  // link). This is safe to also key off initialChannelSlug: an in-app
+  // channel click both sets activeChannel directly (see handleChannelSelect
+  // below) and pushes the URL to match, so by the time this effect would
+  // re-run from that URL change, it just re-derives the same channel — no
+  // fighting, just an idempotent confirmation.
   useEffect(() => {
-    setActiveChannel(isHome ? frontPageData?.channels[0] : activeServerData?.channels[0]);
-  }, [isHome, activeServerData, frontPageData]);
+    const nextChannels = isHome ? frontPageData?.channels : activeServerData?.channels;
+    setActiveChannel(findInitialChannel(nextChannels ?? [], initialChannelSlug));
+  }, [isHome, activeServerData, frontPageData, initialChannelSlug]);
 
   // Stage the reveal of a channel's own messages one at a time, honoring
   // each message's optional `delay` (ms since the previous message
@@ -246,6 +278,7 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
         serverSlug: activeServerSlug,
         serverName: activeServerName,
         channels: channels.map((channel) => channel.text),
+        channelName: activeChannel?.text ?? "",
       });
       setSentMessages((prev) => ({
         ...prev,
@@ -358,12 +391,20 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
                 key={activeServerSlug}
                 channels={channels.map((channel) => ({
                   ...channel,
+                  // Overrides the static "default channel" flag from the
+                  // JSON with whichever channel is actually selected right
+                  // now (which might've come from the URL) — ChannelList is
+                  // a controlled component and just renders this as-is.
+                  active: channel === activeChannel,
                   // Scoped by server so e.g. two servers both having a
                   // "general" channel don't collide — not that it'd matter
                   // in practice since only one channel list is ever mounted
                   // at a time, but it keeps ids self-documenting.
                   id: `channel-${activeServerSlug ?? "home"}-${slugifyChannelText(channel.text)}`,
-                  channelLink: () => setActiveChannel(channel),
+                  channelLink: () => {
+                    setActiveChannel(channel);
+                    onSelectChannel(slugifyChannelText(channel.text));
+                  },
                 }))}
               ></ChannelList>
             )}

@@ -60,6 +60,9 @@ export interface PageContext {
   serverSlug: string | null;
   serverName: string;
   channels: string[];
+  /** The specific channel the visitor is looking at right now, e.g.
+   * "Components" — "" if unknown. */
+  channelName: string;
 }
 
 const SERVER_DETAILS: Record<string, ServerDetail> = {
@@ -126,12 +129,22 @@ function buildProjectsSection(): string {
 export function findMentionedServerSlug(text: string): string | null {
   const servers = serversData as ServerSummary[];
   const lowerText = text.toLowerCase();
-  const match = servers.find((server) =>
-    [server.name, ...(server.aliases ?? [])].some((name) =>
-      lowerText.includes(name.toLowerCase())
-    )
-  );
-  return match?.slug ?? null;
+
+  // Some server names/aliases can be substrings of other, more specific
+  // ones. Rather than taking the first match in array order (which is
+  // arbitrary), scan every name/alias and keep the longest one that
+  // actually matches — the most specific match wins.
+  let bestSlug: string | null = null;
+  let bestLength = -1;
+  for (const server of servers) {
+    for (const name of [server.name, ...(server.aliases ?? [])]) {
+      if (lowerText.includes(name.toLowerCase()) && name.length > bestLength) {
+        bestSlug = server.slug;
+        bestLength = name.length;
+      }
+    }
+  }
+  return bestSlug;
 }
 
 // A short, per-request addendum (not part of the cached base prompt below,
@@ -142,13 +155,17 @@ export function findMentionedServerSlug(text: string): string | null {
 export function buildContextNote(context?: PageContext | null): string | null {
   if (!context) return null;
 
-  const channelsNote = context.channels.length
-    ? ` Its channels are: ${context.channels.join(", ")}.`
+  const channelNote = context.channelName
+    ? ` They're specifically in its "${context.channelName}" channel.`
+    : "";
+  const otherChannels = context.channels.filter((name) => name !== context.channelName);
+  const channelsNote = otherChannels.length
+    ? ` Other channels here: ${otherChannels.join(", ")}.`
     : "";
 
   return (
-    `The visitor is currently looking at the "${context.serverName}" page.${channelsNote} ` +
-    `If they say things like "this project", "this one", or "this channel", they mean this page ` +
+    `The visitor is currently looking at the "${context.serverName}" page.${channelNote}${channelsNote} ` +
+    `If they say things like "this project", "this one", or "this channel", they mean this page/channel ` +
     `unless the conversation clearly points somewhere else.`
   );
 }
@@ -164,13 +181,24 @@ export function resolvePointerTarget(text: string, context?: PageContext | null)
   const lowerText = text.toLowerCase();
 
   if (context) {
-    const channelMatch = context.channels.find((channelName) =>
-      lowerText.includes(channelName.toLowerCase())
-    );
-    if (channelMatch) {
+    // Channel names on a project can share a prefix (e.g. "MIT and FIT" is
+    // a literal substring of both "MIT and FIT Learning Hub" and "MIT and
+    // FIT V2"), so a plain .find() would lock onto whichever short name
+    // happens to sit first in the channels array — even when the reply
+    // clearly names the longer, more specific channel. Instead, check every
+    // channel and keep the longest name that matches.
+    let bestChannel: string | null = null;
+    let bestLength = -1;
+    for (const channelName of context.channels) {
+      if (lowerText.includes(channelName.toLowerCase()) && channelName.length > bestLength) {
+        bestChannel = channelName;
+        bestLength = channelName.length;
+      }
+    }
+    if (bestChannel) {
       // Matches PageLayout's `channel-${activeServerSlug ?? "home"}-...`
       // id scheme exactly — see slugifyChannelText's usage there.
-      return `channel-${context.serverSlug ?? "home"}-${slugifyChannelText(channelMatch)}`;
+      return `channel-${context.serverSlug ?? "home"}-${slugifyChannelText(bestChannel)}`;
     }
   }
 

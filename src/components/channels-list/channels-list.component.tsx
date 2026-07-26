@@ -1,4 +1,3 @@
-import { useState } from "react";
 import styles from "./channels-list.module.scss";
 import { Channel, type ChannelProps } from "../channel/channel.component";
 
@@ -7,11 +6,19 @@ export interface ChannelsListProps {
   channels: ChannelProps[];
 }
 
+// Fully controlled by the `active` flag on each channel — no internal
+// highlight state here. It used to track its own `useState(0)` index, which
+// meant the highlight only ever reflected clicks made inside this
+// component and defaulted to the first channel otherwise; that silently
+// broke once channels became deep-linkable (e.g. loading
+// /my-language-app/components directly would show the right messages via
+// PageLayout's own state, but highlight "general" in the sidebar since this
+// component never knew about the URL). PageLayout now sets `active` on
+// whichever channel object actually matches its real activeChannel.
 export const ChannelList = ({
   name = "Text Channels",
   channels,
 }: ChannelsListProps) => {
-  const [activeChannel, setActiveChannel] = useState(0);
   return (
     <div className={styles.container}>
       <div className={styles.name}>
@@ -39,7 +46,6 @@ export const ChannelList = ({
               <li
                 key={`message-${index}`}
                 onClick={() => {
-                  setActiveChannel(index);
                   channel.channelLink?.();
                 }}
               >
@@ -50,7 +56,7 @@ export const ChannelList = ({
                     channel.channelLink?.();
                   }}
                   disableHover={channel.disableHover}
-                  active={activeChannel === index}
+                  active={channel.active}
                 ></Channel>
               </li>
             );

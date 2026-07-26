@@ -6,5 +6,5 @@ export default async function ServerPage({
   params: Promise<{ serverSlug: string }>;
 }) {
   const { serverSlug } = await params;
-  return <FrontPage serverSlug={serverSlug} />;
+  return <FrontPage serverSlug={serverSlug} channelSlug={null} />;
 }

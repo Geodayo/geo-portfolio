@@ -354,16 +354,36 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
 
   const isReplyPending = pendingReplies[channelKey] ?? false;
 
-  // Keep the message list pinned to the bottom whenever new content shows
-  // up — a newly-revealed message, a sent message, a bot reply, or either
-  // typing indicator appearing/disappearing — instead of leaving the
-  // visitor scrolled wherever they were (which, right after sending a
-  // message, meant the new one landed below the fold).
+  // Auto-scrolling is for LIVE chat only — a message the visitor just sent,
+  // GeoBot's reply, or its typing indicator — since those land below the
+  // fold otherwise. A channel's own scripted messages must not drag the view
+  // down: opening a long channel should start at the top and let the visitor
+  // read from the beginning, staged reveals included.
+  const scrollState = useRef({
+    key: channelKey,
+    count: (sentMessages[channelKey] ?? []).length,
+  });
+
   useEffect(() => {
     const el = messagesWrapperRef.current;
     if (!el) return;
-    el.scrollTop = el.scrollHeight;
-  }, [channelKey, displayedMessages.length, isStagingMessages, isReplyPending]);
+
+    const sentCount = (sentMessages[channelKey] ?? []).length;
+    const previous = scrollState.current;
+    scrollState.current = { key: channelKey, count: sentCount };
+
+    // Switched channel (or server): show the new one from its start rather
+    // than inheriting wherever the previous channel was scrolled to.
+    if (previous.key !== channelKey) {
+      el.scrollTop = 0;
+      return;
+    }
+
+    // Same channel, and the conversation just moved — follow it down.
+    if (sentCount > previous.count || isReplyPending) {
+      el.scrollTop = el.scrollHeight;
+    }
+  }, [channelKey, sentMessages, isReplyPending]);
 
   return (
     <div className={styles.container} ref={containerRef}>

@@ -7,15 +7,24 @@
         {
           "headless": false,
           "messageText": [
-            "Hey, I'm Jorge — welcome to my portfolio.",
-            "This site is styled like a chat app: each server on the left is a project I've worked on.",
-            "Pick one from the list to see the story, screenshots, and tech behind it."
+            "Hey, I'm Jorge. Welcome to my portfolio.",
+            "Quick intro since you're here: I'm a software engineer with about 5 years in the industry, mostly living on the front-end (React, TypeScript, Angular) but just as comfortable on the back-end. I've built a full CRUD API from scratch in Laravel, and these days I lean toward Next.js when I need one.",
+            "I like seeing things through end to end, from the first requirements to shipping, testing, and then actually sticking around for the maintenance and improvements instead of moving on right after launch."
+          ]
+        },
+        {
+          "headless": false,
+          "messageText": [
+            "Each server on the left is a project I've worked on, pick one to see the story, screenshots, and tech behind it.",
+            "Want the fuller picture? My LinkedIn has more project details: https://www.linkedin.com/in/not-jorge-mendez/",
+            "And the code lives on GitHub: https://github.com/Geodayo"
           ]
         },
         {
           "headless": false,
           "messageText": [
             "A bit about this app itself: it's a Next.js + TypeScript site, built to look and feel like a Discord client instead of a typical portfolio grid.",
+            "Each project is its own JSON file behind the scenes, styled as channels and messages, so adding a new one is mostly just writing, not building new pages.",
             "GeoBot, over in the members list, is a small AI assistant wired up through Vercel's AI Gateway. Feel free to ask it about my projects, background, or skills."
           ]
         }

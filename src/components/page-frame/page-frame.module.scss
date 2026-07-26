@@ -19,12 +19,19 @@
 }
 
 @media (min-width: 1921px) {
+    // Scoped to this media query on purpose: browsers only fetch a
+    // background-image when its rule actually matches, so this large
+    // wallpaper never downloads on smaller breakpoints.
     .container {
         display: flex;
         justify-content: center;
-        align-items: center;  
+        align-items: center;
         width: 100vw;
         height: 100vh;
+        background-image: url("/geo-wallpaper.jpg");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
       }
       
       .frameHeader {

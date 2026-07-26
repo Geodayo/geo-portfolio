@@ -218,7 +218,9 @@
 .usersColumn {
   box-sizing: border-box;
   // padding-top: 48px;
-  padding: 72px 28px 16px;
+  // Just a thin 4px inset here — the list rows handle most of their own
+  // padding, this just keeps the hover pill from touching the column edges.
+  padding: 72px 4px 16px;
   background-color: color-mix(
     in oklab,
     hsl(225 calc(1 * 4%) 15% / 1) 100%,

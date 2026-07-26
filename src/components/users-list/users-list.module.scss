@@ -15,6 +15,7 @@
   font-weight: 600;
   text-transform: uppercase;
   cursor: pointer;
+  padding: 0 8px;
   color: color-mix(in oklab, hsl(220 calc(1 * 4%) 63% / 1) 100%, black 0%);
 }
 
@@ -26,7 +27,10 @@
   li {
     display: flex;
     position: relative;
-    padding: 2px;
+    // Horizontal padding lives on the row itself (not the column) so the
+    // hover pill, sized off this box, can still bleed all the way to the
+    // column's edges while the avatar/text keep a little breathing room.
+    padding: 2px 8px;
     align-items: center;
     cursor: pointer;
     gap: 8px;
@@ -57,6 +61,7 @@
     left: 0;
     width: 100%;
     height: 100%;
+    border-radius: 8px;
     background-color: white;
     opacity: 0.1;
   }

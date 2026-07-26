@@ -30,6 +30,16 @@
             "Each project is its own JSON file behind the scenes, styled as channels and messages, so adding a new one is mostly just writing, not building new pages.",
             "GeoBot, over in the members list, is a small AI assistant wired up through Vercel's AI Gateway. Feel free to ask it about my projects, background, or skills."
           ]
+        },
+        {
+          "headless": false,
+          "delay": 1600,
+          "profileName": "GeoBot",
+          "profileThumbnail": "/bot-icon.svg",
+          "userId": "geobot",
+          "messageText": [
+            "Welcome to Jorge's portfolio! Feel free to ask me anything about his experience or how to navigate around here."
+          ]
         }
       ]
     }

@@ -14,6 +14,13 @@ export interface MessageProps {
   gallery?: string[];
   video?: string;
   messageText?: string[];
+  /**
+   * Milliseconds to wait after the previous message reveals before this one
+   * appears. Only consumed by PageLayout's staged-reveal effect (used to
+   * simulate messages arriving live) — the Message component itself ignores
+   * it. Omit or leave at 0 for messages that should just show up instantly.
+   */
+  delay?: number;
 }
 
 export const Message = ({

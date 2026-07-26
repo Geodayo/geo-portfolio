@@ -80,10 +80,45 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
   const [pendingReplies, setPendingReplies] = useState<Record<string, boolean>>({});
   const [profiles, setProfiles] = useState<Record<string, UserProfileData> | null>(null);
   const [activeProfile, setActiveProfile] = useState<{ id: string; rect: DOMRect } | null>(null);
+  const [revealedCount, setRevealedCount] = useState(0);
+  const [isStagingMessages, setIsStagingMessages] = useState(false);
 
   useEffect(() => {
     setActiveChannel(isHome ? frontPageData?.channels[0] : activeServerData?.channels[0]);
   }, [isHome, activeServerData, frontPageData]);
+
+  // Stage the reveal of a channel's own messages one at a time, honoring
+  // each message's optional `delay` (ms since the previous message
+  // appeared). Messages without a delay reveal right away, so channels that
+  // don't opt in behave exactly as before (everything shows up at once).
+  useEffect(() => {
+    const channelMessages = activeChannel?.messages ?? [];
+
+    if (channelMessages.length === 0) {
+      setRevealedCount(0);
+      setIsStagingMessages(false);
+      return;
+    }
+
+    setRevealedCount(0);
+    setIsStagingMessages(true);
+
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+    let elapsed = 0;
+    channelMessages.forEach((message, index) => {
+      elapsed += message.delay ?? 0;
+      timeouts.push(
+        setTimeout(() => {
+          setRevealedCount(index + 1);
+          if (index === channelMessages.length - 1) setIsStagingMessages(false);
+        }, elapsed)
+      );
+    });
+
+    return () => {
+      timeouts.forEach(clearTimeout);
+    };
+  }, [activeChannel]);
 
   useEffect(() => {
     fetch("/data/users.json")
@@ -113,10 +148,12 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
     : servers.find((server) => server.slug === activeServerSlug)?.name ?? "";
 
   const channelKey = `${activeServerSlug ?? "home"}::${activeChannel?.text ?? ""}`;
+  const channelMessages = activeChannel?.messages ?? [];
   const displayedMessages = [
-    ...(activeChannel?.messages ?? []),
+    ...channelMessages.slice(0, revealedCount),
     ...(sentMessages[channelKey] ?? []),
   ];
+  const nextStagedMessage = channelMessages[revealedCount];
 
   const handleSendMessage = async (text: string) => {
     const key = channelKey;
@@ -254,6 +291,16 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
             );
           })}
         </div>
+        {isStagingMessages && nextStagedMessage && (
+          <div className={styles.typingIndicator}>
+            <span className={styles.typingDots}>
+              <span className={styles.typingDot}></span>
+              <span className={styles.typingDot}></span>
+              <span className={styles.typingDot}></span>
+            </span>
+            <span>{nextStagedMessage.profileName ?? "Jorge"} is typing...</span>
+          </div>
+        )}
         {isReplyPending && (
           <div className={styles.typingIndicator}>
             <span className={styles.typingDots}>

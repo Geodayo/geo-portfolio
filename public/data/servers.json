@@ -2,16 +2,19 @@
   {
     "slug": "cynda-media-lab",
     "name": "Cynda Media Lab",
-    "thumbnail": "/images/cynda-logo.png"
+    "thumbnail": "/images/cynda-logo.png",
+    "aliases": ["Cynda"]
   },
   {
     "slug": "fabric-ventures",
     "name": "Fabric Ventures",
-    "thumbnail": "/images/fabricventures_logo.jfif"
+    "thumbnail": "/images/fabricventures_logo.jfif",
+    "aliases": ["Fabric"]
   },
   {
     "slug": "my-language-app",
     "name": "My Language App",
-    "thumbnail": "/images/my-language-app-logo.png"
+    "thumbnail": "/images/my-language-app-logo.png",
+    "aliases": ["MLA", "the language app"]
   }
 ]

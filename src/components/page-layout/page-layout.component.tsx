@@ -12,6 +12,7 @@ import { UsersList, type UsersListProps } from "../users-list/users-list.compone
 import { UserProfile, type UserProfileProps } from "../user-profile/user-profile.component";
 import { sendChatMessage, type ChatHistoryMessage } from "../../services/chat-api";
 import { usePointerTarget } from "../../hooks/use-pointer-target";
+import { slugifyChannelText } from "../../lib/slugify";
 import cx from "clsx";
 
 type UserProfileData = Omit<UserProfileProps, "onSendMessage" | "onClose">;
@@ -43,6 +44,7 @@ function getPopoverStyle(rect: DOMRect): React.CSSProperties {
 
   return { position: "fixed", left, top, zIndex: 1000 };
 }
+
 
 export interface ServerSummary {
   slug: string;
@@ -159,18 +161,34 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
   ];
   const nextStagedMessage = channelMessages[revealedCount];
 
-  // Once a message calling out some element (by its DOM id, e.g. a server's
-  // slug) has revealed, show a decorative arrow pointing at it. Any element
-  // anywhere can be a target — it just needs a matching `id` — so this
-  // isn't tied to servers specifically; see usePointerTarget.
-  const pointerMessageIndex = channelMessages.findIndex((message) => message.pointerTarget);
-  const pointerTargetId =
-    pointerMessageIndex !== -1 ? channelMessages[pointerMessageIndex].pointerTarget ?? null : null;
-  const isPointerMessageRevealed = pointerMessageIndex !== -1 && revealedCount > pointerMessageIndex;
-  const pointerTargetPoint = usePointerTarget(
-    containerRef,
-    isPointerMessageRevealed ? pointerTargetId : null
-  );
+  // Whenever a new message shows up — whether it's a scripted one finishing
+  // its staged reveal, or a live GeoBot reply that mentioned a project (see
+  // findMentionedServerSlug in src/lib/knowledge.ts) — check if it called
+  // out a pointer target and, if so, aim the arrow at it. `pointerCue` uses
+  // an incrementing key (not just the target id) so the un-dismiss/retimer
+  // effect below still fires even if the same target gets pointed at twice
+  // in a row.
+  const [pointerCue, setPointerCue] = useState<{ targetId: string; key: number } | null>(null);
+  const pointerCueCounter = useRef(0);
+
+  useEffect(() => {
+    const lastMessage = displayedMessages[displayedMessages.length - 1];
+    if (lastMessage?.pointerTarget) {
+      pointerCueCounter.current += 1;
+      setPointerCue({ targetId: lastMessage.pointerTarget, key: pointerCueCounter.current });
+      setPointerDismissed(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [channelKey, displayedMessages.length]);
+
+  // Clear the pointer entirely when switching channels/servers, rather than
+  // leaving a stale arrow pointing at something from the previous channel.
+  useEffect(() => {
+    setPointerCue(null);
+    setPointerDismissed(false);
+  }, [activeChannel]);
+
+  const pointerTargetPoint = usePointerTarget(containerRef, pointerCue?.targetId ?? null);
   // usePointerTarget gives the target's dead center, which tends to look
   // like the arrow is stabbing right into the icon. Nudge the landing spot
   // up and to the right instead, toward the edge the arrow is approaching
@@ -183,18 +201,14 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
       }
     : null;
 
-  // Let it show again if the visitor leaves and comes back to this channel.
+  // Auto-dismiss the pointer arrow 10s after it appears, so it doesn't just
+  // sit there indefinitely. Keyed on pointerCue so a fresh cue (new target,
+  // or even the same target pointed at again) always restarts the clock.
   useEffect(() => {
-    setPointerDismissed(false);
-  }, [activeChannel]);
-
-  // Auto-dismiss the pointer arrow 10s after it first appears, so it
-  // doesn't just sit there indefinitely.
-  useEffect(() => {
-    if (!isPointerMessageRevealed) return;
+    if (!pointerCue) return;
     const timeout = setTimeout(() => setPointerDismissed(true), 10000);
     return () => clearTimeout(timeout);
-  }, [isPointerMessageRevealed]);
+  }, [pointerCue]);
 
   const showPointerArrow = Boolean(arrowLandingPoint) && !pointerDismissed;
 
@@ -227,7 +241,11 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
     setPendingReplies((prev) => ({ ...prev, [key]: true }));
 
     try {
-      const reply = await sendChatMessage(text, history);
+      const { reply, pointerTarget } = await sendChatMessage(text, history, {
+        serverSlug: activeServerSlug,
+        serverName: activeServerName,
+        channels: channels.map((channel) => channel.text),
+      });
       setSentMessages((prev) => ({
         ...prev,
         [key]: [
@@ -237,6 +255,10 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
             profileThumbnail: BOT_THUMBNAIL,
             userId: "geobot",
             messageText: [reply],
+            // If the reply was about a specific project, this drives the
+            // pointer-arrow effect below (see the displayedMessages.length
+            // effect) — it'll pop up pointing at that server's icon.
+            pointerTarget: pointerTarget ?? undefined,
           },
         ],
       }));
@@ -324,6 +346,11 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
                 key={activeServerSlug}
                 channels={channels.map((channel) => ({
                   ...channel,
+                  // Scoped by server so e.g. two servers both having a
+                  // "general" channel don't collide — not that it'd matter
+                  // in practice since only one channel list is ever mounted
+                  // at a time, but it keeps ids self-documenting.
+                  id: `channel-${activeServerSlug ?? "home"}-${slugifyChannelText(channel.text)}`,
                   channelLink: () => setActiveChannel(channel),
                 }))}
               ></ChannelList>

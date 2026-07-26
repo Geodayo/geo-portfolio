@@ -45,6 +45,7 @@ export const ChannelList = ({
               >
                 <Channel
                   text={channel.text}
+                  id={channel.id}
                   channelLink={() => {
                     channel.channelLink?.();
                   }}

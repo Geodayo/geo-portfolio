@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSystemPrompt } from "@/lib/knowledge";
+import { getSystemPrompt, resolvePointerTarget, buildContextNote, type PageContext } from "@/lib/knowledge";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 // Ported from wip/api/chat.ts (a plain Vercel Node function) into a Next.js
@@ -76,6 +76,25 @@ export async function POST(req: NextRequest) {
       content: entry.content.slice(0, MAX_MESSAGE_LENGTH),
     }));
 
+  const rawContext = body.context;
+  const context: PageContext | null =
+    typeof rawContext === "object" &&
+    rawContext !== null &&
+    (typeof (rawContext as { serverSlug?: unknown }).serverSlug === "string" ||
+      (rawContext as { serverSlug?: unknown }).serverSlug === null) &&
+    typeof (rawContext as { serverName?: unknown }).serverName === "string"
+      ? {
+          serverSlug: (rawContext as { serverSlug: string | null }).serverSlug,
+          serverName: (rawContext as { serverName: string }).serverName.slice(0, 100),
+          channels: Array.isArray((rawContext as { channels?: unknown }).channels)
+            ? ((rawContext as { channels: unknown[] }).channels
+                .filter((c): c is string => typeof c === "string")
+                .slice(0, 20))
+            : [],
+        }
+      : null;
+  const contextNote = buildContextNote(context);
+
   try {
     const gatewayResponse = await fetch(GATEWAY_URL, {
       method: "POST",
@@ -88,6 +107,7 @@ export async function POST(req: NextRequest) {
         max_tokens: MAX_TOKENS,
         messages: [
           { role: "system", content: getSystemPrompt() },
+          ...(contextNote ? [{ role: "system" as const, content: contextNote }] : []),
           ...history,
           { role: "user", content: message },
         ],
@@ -109,8 +129,9 @@ export async function POST(req: NextRequest) {
     const reply =
       data.choices?.[0]?.message?.content?.trim() ||
       "Sorry, I couldn't come up with a response to that.";
+    const pointerTarget = resolvePointerTarget(reply, context);
 
-    return NextResponse.json({ reply });
+    return NextResponse.json({ reply, pointerTarget });
   } catch (err) {
     console.error("Chat handler error:", err);
     return NextResponse.json(

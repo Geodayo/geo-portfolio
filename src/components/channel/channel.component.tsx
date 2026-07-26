@@ -6,6 +6,9 @@ export interface ChannelProps {
   active?: boolean;
   disableHover?: boolean;
   channelLink: () => void;
+  /** DOM id, so this channel can be a pointer-arrow target (see
+   * usePointerTarget) — set by whoever renders the channel list. */
+  id?: string;
 }
 
 export const Channel = ({
@@ -13,9 +16,11 @@ export const Channel = ({
   active,
   channelLink,
   disableHover,
+  id,
 }: ChannelProps) => {
   return (
     <div
+      id={id}
       className={cx(styles.container, {
         [styles.active]: active,
         [styles.disableHover]: disableHover,

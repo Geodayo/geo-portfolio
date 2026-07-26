@@ -99,20 +99,46 @@ function findInitialChannel(
   return channels.find((channel) => channel.active) ?? channels[0];
 }
 
+/**
+ * How many of a channel's messages are due immediately: the leading run that
+ * has no `delay`. Shared by the initial state and the staged-reveal effect so
+ * both agree on what "already revealed" means.
+ *
+ * This has to feed useState, not just the effect. Effects don't run during
+ * server rendering and only run after the first commit on the client, so
+ * seeding revealedCount at 0 puts an empty message list in the SSR HTML and
+ * paints it before hydration can fill it in — the list visibly flashes empty
+ * even for a single message with no delay.
+ */
+function immediateRevealCount(channel: ServerChannel | undefined): number {
+  const messages = channel?.messages ?? [];
+  const firstDelayed = messages.findIndex((message) => (message.delay ?? 0) > 0);
+  return firstDelayed === -1 ? messages.length : firstDelayed;
+}
+
 export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontPageData, initialChannelSlug, onSelectServer, onSelectChannel }: PageLayoutProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const messagesWrapperRef = useRef<HTMLDivElement>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const isHome = activeServerSlug === null;
   const channels = isHome ? frontPageData?.channels ?? [] : activeServerData?.channels ?? [];
+  const initialChannel = findInitialChannel(channels, initialChannelSlug);
   const [activeChannel, setActiveChannel] = useState<ServerChannel | undefined>(
-    findInitialChannel(channels, initialChannelSlug)
+    initialChannel
   );
   const [sentMessages, setSentMessages] = useState<Record<string, MessageProps[]>>({});
   const [pendingReplies, setPendingReplies] = useState<Record<string, boolean>>({});
   const [activeProfile, setActiveProfile] = useState<{ id: string; rect: DOMRect } | null>(null);
-  const [revealedCount, setRevealedCount] = useState(0);
-  const [isStagingMessages, setIsStagingMessages] = useState(false);
+  // Seeded, not 0 — see immediateRevealCount. The first render (server and
+  // client) must already contain the messages that aren't waiting on a delay.
+  const [revealedCount, setRevealedCount] = useState(() =>
+    immediateRevealCount(initialChannel)
+  );
+  const [isStagingMessages, setIsStagingMessages] = useState(
+    () =>
+      immediateRevealCount(initialChannel) <
+      (initialChannel?.messages?.length ?? 0)
+  );
   const [pointerDismissed, setPointerDismissed] = useState(false);
 
   // Re-derives the active channel whenever the server data changes (e.g.
@@ -157,13 +183,7 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
       return;
     }
 
-    // Index of the first message that actually wants to wait; everything
-    // before it is due at t=0 and can be shown without a paint in between.
-    const firstDelayed = channelMessages.findIndex(
-      (message) => (message.delay ?? 0) > 0
-    );
-    const immediateCount =
-      firstDelayed === -1 ? channelMessages.length : firstDelayed;
+    const immediateCount = immediateRevealCount(activeChannel);
 
     setRevealedCount(immediateCount);
     setIsStagingMessages(immediateCount < channelMessages.length);

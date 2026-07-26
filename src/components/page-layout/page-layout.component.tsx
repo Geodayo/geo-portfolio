@@ -77,6 +77,7 @@ const ANONYMOUS_THUMBNAIL = "/anonymous-icon.svg";
 
 export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontPageData, onSelectServer }: PageLayoutProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const messagesWrapperRef = useRef<HTMLDivElement>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const isHome = activeServerSlug === null;
   const channels = isHome ? frontPageData?.channels ?? [] : activeServerData?.channels ?? [];
@@ -284,6 +285,17 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
 
   const isReplyPending = pendingReplies[channelKey] ?? false;
 
+  // Keep the message list pinned to the bottom whenever new content shows
+  // up — a newly-revealed message, a sent message, a bot reply, or either
+  // typing indicator appearing/disappearing — instead of leaving the
+  // visitor scrolled wherever they were (which, right after sending a
+  // message, meant the new one landed below the fold).
+  useEffect(() => {
+    const el = messagesWrapperRef.current;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
+  }, [channelKey, displayedMessages.length, isStagingMessages, isReplyPending]);
+
   return (
     <div className={styles.container} ref={containerRef}>
       {arrowLandingPoint && (
@@ -379,7 +391,7 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
             channelLink={() => void 0}
           ></Channel>
         </div>
-        <div className={styles.messagesWrapper}>
+        <div className={styles.messagesWrapper} ref={messagesWrapperRef}>
           {displayedMessages.map((message, index2) => {
             return (
               <div key={`message-${index2}`}>

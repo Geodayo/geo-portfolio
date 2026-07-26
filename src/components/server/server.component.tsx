@@ -1,14 +1,17 @@
+import cx from "clsx";
 import styles from "./server.module.scss";
 
 export interface ServerProps {
   name: string;
   thumbnail: string;
+  active?: boolean;
   serverLink: () => void;
 }
 
-export const Server = ({ name, thumbnail, serverLink }: ServerProps) => {
+export const Server = ({ name, thumbnail, active = false, serverLink }: ServerProps) => {
   return (
-    <div className={styles.container}>
+    <div className={cx(styles.container, { [styles.active]: active })}>
+      <span className={styles.pill}></span>
       <div
         className={styles.thumbnail}
         style={{ backgroundImage: `url(${thumbnail})` }}

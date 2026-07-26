@@ -194,6 +194,7 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, onSele
             <Server
               name={"Front Page"}
               thumbnail={"/discord-temp-icon.jpg"}
+              active={isHome}
               serverLink={() => onSelectServer(null)}
             ></Server>
           </div>
@@ -206,6 +207,7 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, onSele
                 <Server
                   name={server.name}
                   thumbnail={server.thumbnail}
+                  active={activeServerSlug === server.slug}
                   serverLink={() => onSelectServer(server.slug)}
                 ></Server>
               </div>

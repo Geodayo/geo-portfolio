@@ -1,4 +1,39 @@
 
+.container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.pill {
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  z-index: 10;
+  width: 4px;
+  height: 8px;
+  border-radius: 0 4px 4px 0;
+  background-color: #fff;
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: height .15s ease-out, opacity .15s ease-out;
+  pointer-events: none;
+}
+
+.container:hover .pill {
+  height: 20px;
+  opacity: 1;
+}
+
+.container.active .pill {
+  height: 40px;
+  opacity: 1;
+}
+
+.container.active .thumbnail {
+  border-radius: 16px;
+}
+
 .thumbnail {
   display: block;
   position: relative;

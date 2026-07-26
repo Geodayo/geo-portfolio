@@ -1,0 +1,33 @@
+.arrow {
+  --arrow-rotate: 0deg;
+  --arrow-scale-x: 1;
+
+  display: block;
+  opacity: 0.85;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+  transform: scaleX(var(--arrow-scale-x)) rotate(var(--arrow-rotate));
+  // transform-origin is set inline (pinned to the arrowhead tip) by
+  // arrow.component.tsx, not here.
+  animation: arrowIn 0.3s ease-out, arrowWiggle 2.4s ease-in-out 0.3s infinite;
+}
+
+@keyframes arrowIn {
+  from {
+    opacity: 0;
+    transform: scaleX(var(--arrow-scale-x)) rotate(var(--arrow-rotate)) scale(0.8);
+  }
+  to {
+    opacity: 0.85;
+    transform: scaleX(var(--arrow-scale-x)) rotate(var(--arrow-rotate)) scale(1);
+  }
+}
+
+@keyframes arrowWiggle {
+  0%,
+  100% {
+    transform: scaleX(var(--arrow-scale-x)) rotate(var(--arrow-rotate));
+  }
+  50% {
+    transform: scaleX(var(--arrow-scale-x)) rotate(calc(var(--arrow-rotate) - 4deg));
+  }
+}

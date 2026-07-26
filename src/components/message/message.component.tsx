@@ -21,6 +21,16 @@ export interface MessageProps {
    * it. Omit or leave at 0 for messages that should just show up instantly.
    */
   delay?: number;
+  /**
+   * The DOM `id` of some element elsewhere on the page this message is
+   * calling out (e.g. a server icon's slug, since PageLayout gives each one
+   * `id={server.slug}`) — but it can be the id of literally anything.
+   * Only consumed by PageLayout: once a message with a pointerTarget has
+   * revealed, PageLayout looks up that id (see usePointerTarget) and shows
+   * a decorative Arrow pointing at it. To make a new element pointable,
+   * just give it a matching `id` somewhere in the tree.
+   */
+  pointerTarget?: string;
 }
 
 export const Message = ({

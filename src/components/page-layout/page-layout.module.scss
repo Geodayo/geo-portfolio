@@ -1,11 +1,35 @@
 @use '../../styles/init';
 
 .container {
+  position: relative;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   height: 100%;
   width: 100%;
+}
+
+// Positioned relative to .container so it can float above any column. The
+// actual top/left come from an inline style (see usePointerTarget +
+// page-layout.component.tsx), computed from the real position of whatever
+// element the current message's `pointerTarget` id resolves to — nothing
+// hardcoded here.
+.pointerArrow {
+  position: absolute;
+  z-index: 30;
+  pointer-events: none;
+
+  @media (max-width: 480px) {
+    display: none;
+  }
+}
+
+// Applied once the 10s auto-dismiss timer fires. !important because .arrow
+// (in arrow.module.scss) sets its own opacity at equal specificity — this
+// guarantees the fade-out wins regardless of module import order.
+.pointerArrowHidden {
+  opacity: 0 !important;
+  transition: opacity 0.4s ease-out;
 }
 
 .navigationColumn {

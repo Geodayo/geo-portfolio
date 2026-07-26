@@ -40,6 +40,18 @@
           "messageText": [
             "Welcome to Jorge's portfolio! Feel free to ask me anything about his experience or how to navigate around here."
           ]
+        },
+        {
+          "headless": false,
+          "delay": 1400,
+          "profileName": "GeoBot",
+          "profileThumbnail": "/bot-icon.svg",
+          "userId": "geobot",
+          "pointerTarget": "cynda-media-lab",
+          "messageText": [
+            "Quick nav tip while I'm here: every server on the left side represents some experience, whether it was a job or a project.",
+            "Click one to open it up, then use the channels underneath to dig into specific parts (like a Components gallery). Click the icon up top to come back to this page any time."
+          ]
         }
       ]
     }

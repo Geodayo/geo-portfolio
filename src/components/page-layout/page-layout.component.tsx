@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./page-layout.module.scss";
 import { Server} from "../server/server.component";
 import { Message, type MessageProps } from "../message/message.component";
+import { Arrow, ARROW_TIP } from "../arrow/arrow.component";
 import { Channel } from "../channel/channel.component";
 import {
   ChannelList
@@ -10,6 +11,7 @@ import { InputForm } from "../input-form/input-form.component";
 import { UsersList, type UsersListProps } from "../users-list/users-list.component";
 import { UserProfile, type UserProfileProps } from "../user-profile/user-profile.component";
 import { sendChatMessage, type ChatHistoryMessage } from "../../services/chat-api";
+import { usePointerTarget } from "../../hooks/use-pointer-target";
 import cx from "clsx";
 
 type UserProfileData = Omit<UserProfileProps, "onSendMessage" | "onClose">;
@@ -72,6 +74,7 @@ const BOT_THUMBNAIL = "/bot-icon.svg";
 const ANONYMOUS_THUMBNAIL = "/anonymous-icon.svg";
 
 export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontPageData, onSelectServer }: PageLayoutProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const isHome = activeServerSlug === null;
   const channels = isHome ? frontPageData?.channels ?? [] : activeServerData?.channels ?? [];
@@ -82,6 +85,7 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
   const [activeProfile, setActiveProfile] = useState<{ id: string; rect: DOMRect } | null>(null);
   const [revealedCount, setRevealedCount] = useState(0);
   const [isStagingMessages, setIsStagingMessages] = useState(false);
+  const [pointerDismissed, setPointerDismissed] = useState(false);
 
   useEffect(() => {
     setActiveChannel(isHome ? frontPageData?.channels[0] : activeServerData?.channels[0]);
@@ -155,6 +159,45 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
   ];
   const nextStagedMessage = channelMessages[revealedCount];
 
+  // Once a message calling out some element (by its DOM id, e.g. a server's
+  // slug) has revealed, show a decorative arrow pointing at it. Any element
+  // anywhere can be a target — it just needs a matching `id` — so this
+  // isn't tied to servers specifically; see usePointerTarget.
+  const pointerMessageIndex = channelMessages.findIndex((message) => message.pointerTarget);
+  const pointerTargetId =
+    pointerMessageIndex !== -1 ? channelMessages[pointerMessageIndex].pointerTarget ?? null : null;
+  const isPointerMessageRevealed = pointerMessageIndex !== -1 && revealedCount > pointerMessageIndex;
+  const pointerTargetPoint = usePointerTarget(
+    containerRef,
+    isPointerMessageRevealed ? pointerTargetId : null
+  );
+  // usePointerTarget gives the target's dead center, which tends to look
+  // like the arrow is stabbing right into the icon. Nudge the landing spot
+  // up and to the right instead, toward the edge the arrow is approaching
+  // from, so it reads as "pointing at" rather than "landing on".
+  const POINTER_LANDING_OFFSET = { x: 24, y: -10 };
+  const arrowLandingPoint = pointerTargetPoint
+    ? {
+        x: pointerTargetPoint.x + POINTER_LANDING_OFFSET.x,
+        y: pointerTargetPoint.y + POINTER_LANDING_OFFSET.y,
+      }
+    : null;
+
+  // Let it show again if the visitor leaves and comes back to this channel.
+  useEffect(() => {
+    setPointerDismissed(false);
+  }, [activeChannel]);
+
+  // Auto-dismiss the pointer arrow 10s after it first appears, so it
+  // doesn't just sit there indefinitely.
+  useEffect(() => {
+    if (!isPointerMessageRevealed) return;
+    const timeout = setTimeout(() => setPointerDismissed(true), 10000);
+    return () => clearTimeout(timeout);
+  }, [isPointerMessageRevealed]);
+
+  const showPointerArrow = Boolean(arrowLandingPoint) && !pointerDismissed;
+
   const handleSendMessage = async (text: string) => {
     const key = channelKey;
 
@@ -220,10 +263,25 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
   const isReplyPending = pendingReplies[channelKey] ?? false;
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} ref={containerRef}>
+      {arrowLandingPoint && (
+        <Arrow
+          className={cx(styles.pointerArrow, { [styles.pointerArrowHidden]: !showPointerArrow })}
+          // The base shape approaches its tip from almost directly above
+          // (tail sits up-and-slightly-right of the tip). Since rotation
+          // pivots around the tip itself, rotating further flattens the
+          // arc so it reads as coming in from the side at roughly the same
+          // height as the target, instead of arcing down from above it.
+          rotate={95}
+          style={{
+            top: arrowLandingPoint.y - ARROW_TIP.y,
+            left: arrowLandingPoint.x - ARROW_TIP.x,
+          }}
+        />
+      )}
       <div className={styles.navigationColumn}>
         <div className={styles.serverColumn}>
-          <div className={styles.serversWrapper}>
+          <div className={styles.serversWrapper} id="front-page">
             <Server
               name={"Front Page"}
               thumbnail={"/discord-temp-icon.jpg"}
@@ -235,6 +293,7 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
             return (
               <div
                 className={styles.serversWrapper}
+                id={server.slug}
                 key={`server-${server.slug}`}
               >
                 <Server

@@ -8,7 +8,7 @@
           "headless": false,
           "date": "Jul 01, 2025",
           "messageText": [
-            "I migrated some static pages to Webflow, rebuilding existing pages and developing new ones from provided designs and integrating Webflow CMS to enable dynamic content management.",
+            "I migrated their old Next.js site to Webflow, rebuilding existing pages and developing new ones from provided designs and integrating Webflow CMS to enable dynamic content management.",
             "",
             "Built an AI-powered search page that uses the full website as a knowledge base to deliver accurate, context-aware responses. The AI agent was developed and deployed on Vercel and embedded directly into the Webflow search page.",
             "Visit the live website at https://www.fabric.vc/"

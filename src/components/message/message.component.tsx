@@ -20,7 +20,7 @@ export const Message = ({
   headless = false,
   date,
   profileThumbnail = "/totoro-profile.jpg",
-  profileName = "Geo",
+  profileName = "Jorge",
   userId = "geo",
   onProfileClick,
   type = "text",

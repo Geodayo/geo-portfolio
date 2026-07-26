@@ -1,0 +1,26 @@
+{
+  "channels": [
+    {
+      "text": "general",
+      "active": true,
+      "messages": [
+        {
+          "headless": false,
+          "messageText": [
+            "Hey, I'm Jorge — welcome to my portfolio.",
+            "This site is styled like a chat app: each server on the left is a project I've worked on.",
+            "Pick one from the list to see the story, screenshots, and tech behind it."
+          ]
+        },
+        {
+          "headless": false,
+          "messageText": [
+            "A bit about this app itself: it's a Next.js + TypeScript site, built to look and feel like a Discord client instead of a typical portfolio grid.",
+            "GeoBot, over in the members list, is a small AI assistant wired up through Vercel's AI Gateway. Feel free to ask it about my projects, background, or skills."
+          ]
+        }
+      ]
+    }
+  ],
+  "users": {}
+}

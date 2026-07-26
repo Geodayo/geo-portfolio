@@ -33,7 +33,7 @@ export const UsersList = ({ listName, users, onProfileClick }: UsersListProps) =
               className={styles.thumbnail}
               style={{ backgroundImage: `url(/totoro-profile.jpg)` }}
             ></div>
-            <span>{"Geo"}</span>
+            <span>{"Jorge"}</span>
             <svg
               aria-label="Server Owner"
               className={styles.crown}

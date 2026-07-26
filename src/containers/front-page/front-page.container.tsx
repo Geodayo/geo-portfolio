@@ -13,11 +13,18 @@ export function FrontPage({ serverSlug }: FrontPageProps) {
 
   const [servers, setServers] = useState<ServerSummary[] | null>(null);
   const [activeServerData, setActiveServerData] = useState<ServerDetailData | null>(null);
+  const [frontPageData, setFrontPageData] = useState<ServerDetailData | null>(null);
 
   useEffect(() => {
     fetch("/data/servers.json")
       .then((res) => res.json())
       .then((json) => setServers(json));
+  }, []);
+
+  useEffect(() => {
+    fetch("/data/frontpage.json")
+      .then((res) => res.json())
+      .then((json) => setFrontPageData(json));
   }, []);
 
   const activeSlug = serverSlug && servers?.some((server) => server.slug === serverSlug)
@@ -50,6 +57,7 @@ export function FrontPage({ serverSlug }: FrontPageProps) {
             servers={servers}
             activeServerSlug={activeSlug}
             activeServerData={activeServerData}
+            frontPageData={frontPageData}
             onSelectServer={(slug) => router.push(slug ? `/${slug}` : "/")}
         ></PageLayout>
     )}

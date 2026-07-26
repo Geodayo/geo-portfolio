@@ -63,6 +63,7 @@ export interface PageLayoutProps {
   servers: ServerSummary[];
   activeServerSlug: string | null;
   activeServerData: ServerDetailData | null;
+  frontPageData: ServerDetailData | null;
   onSelectServer: (slug: string | null) => void;
 }
 
@@ -70,26 +71,10 @@ const BOT_NAME = "GeoBot";
 const BOT_THUMBNAIL = "/bot-icon.svg";
 const ANONYMOUS_THUMBNAIL = "/anonymous-icon.svg";
 
-const homeChannels: ServerChannel[] = [
-  {
-    text: "general",
-    active: true,
-    messages: [
-      {
-        messageText: [
-          "Hi, I'm Geo, welcome to my portfolio.",
-          "This site is styled like a chat app, each server on the left is a project I've worked on.",
-          "Pick one to see the story, screenshots, and tech behind it.",
-        ],
-      },
-    ],
-  },
-];
-
-export const PageLayout = ({ servers, activeServerSlug, activeServerData, onSelectServer }: PageLayoutProps) => {
+export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontPageData, onSelectServer }: PageLayoutProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const isHome = activeServerSlug === null;
-  const channels = isHome ? homeChannels : activeServerData?.channels ?? [];
+  const channels = isHome ? frontPageData?.channels ?? [] : activeServerData?.channels ?? [];
   const [activeChannel, setActiveChannel] = useState<ServerChannel | undefined>(channels[0]);
   const [sentMessages, setSentMessages] = useState<Record<string, MessageProps[]>>({});
   const [pendingReplies, setPendingReplies] = useState<Record<string, boolean>>({});
@@ -97,8 +82,8 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, onSele
   const [activeProfile, setActiveProfile] = useState<{ id: string; rect: DOMRect } | null>(null);
 
   useEffect(() => {
-    setActiveChannel(isHome ? homeChannels[0] : activeServerData?.channels[0]);
-  }, [isHome, activeServerData]);
+    setActiveChannel(isHome ? frontPageData?.channels[0] : activeServerData?.channels[0]);
+  }, [isHome, activeServerData, frontPageData]);
 
   useEffect(() => {
     fetch("/data/users.json")
@@ -290,7 +275,7 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, onSele
       <div className={styles.usersColumn}>
         <div className={styles.usersLists}>
           <UsersList
-            {...activeServerData?.users}
+            {...(isHome ? frontPageData?.users : activeServerData?.users)}
             onProfileClick={handleProfileClick}
           ></UsersList>
         </div>

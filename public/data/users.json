@@ -1,6 +1,6 @@
 {
   "geo": {
-    "displayName": "Geo",
+    "displayName": "Jorge",
     "username": "#geodesu",
     "avatar": "/totoro-profile.jpg",
     "bannerColor": "#5865f2",
@@ -29,7 +29,7 @@
     "status": "online",
     "mutualServers": 2,
     "bio": [
-      "I'm GeoBot, an AI assistant trained on Geo's portfolio. Ask me anything about Geo's projects, background, or skills!"
+      "I'm GeoBot, an AI assistant trained on Jorge's portfolio. Ask me anything about Jorge's projects, background, or skills!"
     ],
     "customStatus": {
       "text": "Always online",

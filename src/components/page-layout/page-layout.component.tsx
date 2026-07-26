@@ -195,9 +195,10 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
   const nextStagedMessage = channelMessages[revealedCount];
 
   // Whenever a new message shows up — whether it's a scripted one finishing
-  // its staged reveal, or a live GeoBot reply that mentioned a project (see
-  // findMentionedServerSlug in src/lib/knowledge.ts) — check if it called
-  // out a pointer target and, if so, aim the arrow at it. `pointerCue` uses
+  // its staged reveal, or a live GeoBot reply that opted into a pointer via
+  // a [[point: ...]] tag (see extractPointerTag/resolvePointerTarget in
+  // src/lib/knowledge.ts) — check if it called out a pointer target and, if
+  // so, aim the arrow at it. `pointerCue` uses
   // an incrementing key (not just the target id) so the un-dismiss/retimer
   // effect below still fires even if the same target gets pointed at twice
   // in a row.

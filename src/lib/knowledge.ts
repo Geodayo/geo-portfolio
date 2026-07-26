@@ -170,27 +170,35 @@ export function buildContextNote(context?: PageContext | null): string | null {
   );
 }
 
-// Like findMentionedServerSlug, but also checks the CURRENT page's own
-// channels first (matched against context.channels, then turned into the
-// same "channel-{slug}-{slugified text}" id PageLayout gives each channel
-// element — see slugifyChannelText). A channel on the current page takes
-// priority over a different project's name, since "the Components channel"
-// while already on that project's page should point at the channel, not
-// re-point at the project itself.
-export function resolvePointerTarget(text: string, context?: PageContext | null): string | null {
-  const lowerText = text.toLowerCase();
+// Case-insensitive "do these two names refer to the same thing" check. Used
+// for matching a pointer tag's name (see extractPointerTag below) back to
+// one of the current page's real channel names — a plain equality check
+// would be too strict if the model paraphrases slightly, so this also
+// allows either name to contain the other.
+function namesMatch(a: string, b: string): boolean {
+  const la = a.toLowerCase().trim();
+  const lb = b.toLowerCase().trim();
+  return la === lb || la.includes(lb) || lb.includes(la);
+}
 
+// Resolves the name inside a [[point: ...]] tag (see extractPointerTag) to
+// an actual pointer-target id. Checks the CURRENT page's own channels first
+// (matched against context.channels, then turned into the same
+// "channel-{slug}-{slugified text}" id PageLayout gives each channel
+// element — see slugifyChannelText), falling back to a cross-project server
+// match via findMentionedServerSlug. A channel on the current page takes
+// priority over a different project's name, since the model is told to
+// name the current page's own channel when that's what's relevant.
+export function resolvePointerTarget(pointerName: string, context?: PageContext | null): string | null {
   if (context) {
     // Channel names on a project can share a prefix (e.g. "MIT and FIT" is
     // a literal substring of both "MIT and FIT Learning Hub" and "MIT and
-    // FIT V2"), so a plain .find() would lock onto whichever short name
-    // happens to sit first in the channels array — even when the reply
-    // clearly names the longer, more specific channel. Instead, check every
-    // channel and keep the longest name that matches.
+    // FIT V2"), so keep the longest matching name rather than the first one
+    // found, in case the tag name itself is ambiguous.
     let bestChannel: string | null = null;
     let bestLength = -1;
     for (const channelName of context.channels) {
-      if (lowerText.includes(channelName.toLowerCase()) && channelName.length > bestLength) {
+      if (namesMatch(pointerName, channelName) && channelName.length > bestLength) {
         bestChannel = channelName;
         bestLength = channelName.length;
       }
@@ -202,7 +210,29 @@ export function resolvePointerTarget(text: string, context?: PageContext | null)
     }
   }
 
-  return findMentionedServerSlug(text);
+  return findMentionedServerSlug(pointerName);
+}
+
+// The model opts IN to showing the pointer arrow (see the "Pointing the
+// visitor somewhere" instructions in getSystemPrompt below) by ending its
+// reply with a line like "[[point: MIT and FIT V2]]" only when pointing
+// somewhere is actually useful — rather than us guessing from whatever
+// project/channel names happen to appear in its reply, which used to fire
+// the arrow on almost every message (e.g. a reply that just mentions a few
+// past projects in passing). This strips that tag out of the visible reply
+// and returns the name inside it (or null if the model didn't ask for a
+// pointer at all).
+const POINTER_TAG_PATTERN = /\[\[\s*point\s*:\s*([^\]]+?)\s*\]\]/gi;
+
+export function extractPointerTag(rawReply: string): { reply: string; pointerName: string | null } {
+  let pointerName: string | null = null;
+  const stripped = rawReply
+    .replace(POINTER_TAG_PATTERN, (_match, name: string) => {
+      pointerName = name.trim();
+      return "";
+    })
+    .trim();
+  return { reply: stripped || rawReply.trim(), pointerName };
 }
 
 export function getSystemPrompt(): string {
@@ -214,6 +244,12 @@ export function getSystemPrompt(): string {
     "Answer using ONLY the information in the sections below. Speak about Jorge in the third person.",
     "Keep answers short and conversational (2-4 sentences) unless the visitor asks for more detail.",
     "If you don't have the information to answer, say so honestly and suggest the visitor reach out to Jorge directly. Never invent employers, dates, or skills that aren't listed below.",
+    "",
+    "## Pointing the visitor somewhere (optional, use sparingly)",
+    "The UI can show an arrow pointing at one specific project or channel in the sidebar. Most replies should NOT trigger it — only use it when your reply is specifically directing the visitor to go look at ONE particular project/channel they aren't already looking at.",
+    "Good times to use it: answering \"where am I?\" / \"what project is this?\", or specifically recommending one other project worth checking out.",
+    "Do NOT use it when: your reply just mentions several projects/channels in passing as background or history, the visitor is already on the one relevant channel (they already know where they are), or no single project/channel clearly stands out as *the* place to go.",
+    "When — and only when — pointing is genuinely useful, end your ENTIRE reply with its own final line, exactly: [[point: <name>]] — where <name> is copied exactly from one of the project or channel names listed below. Never include this line otherwise, and never mention or explain the tag itself in the visible part of your reply.",
     "",
     "## About Jorge",
     buildAboutSection(),

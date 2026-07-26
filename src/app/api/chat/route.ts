@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSystemPrompt, resolvePointerTarget, buildContextNote, type PageContext } from "@/lib/knowledge";
+import {
+  getSystemPrompt,
+  resolvePointerTarget,
+  extractPointerTag,
+  buildContextNote,
+  type PageContext,
+} from "@/lib/knowledge";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 // Ported from wip/api/chat.ts (a plain Vercel Node function) into a Next.js
@@ -130,10 +136,15 @@ export async function POST(req: NextRequest) {
     const data = (await gatewayResponse.json()) as {
       choices?: { message?: { content?: string } }[];
     };
-    const reply =
+    const rawReply =
       data.choices?.[0]?.message?.content?.trim() ||
       "Sorry, I couldn't come up with a response to that.";
-    const pointerTarget = resolvePointerTarget(reply, context);
+    // The model opts in to the pointer arrow with a trailing [[point: ...]]
+    // tag (see getSystemPrompt) rather than us inferring it from whatever
+    // names happen to appear in the reply — that used to fire the arrow on
+    // almost every message. Strip the tag out before showing the reply.
+    const { reply, pointerName } = extractPointerTag(rawReply);
+    const pointerTarget = pointerName ? resolvePointerTarget(pointerName, context) : null;
 
     return NextResponse.json({ reply, pointerTarget });
   } catch (err) {

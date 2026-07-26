@@ -71,7 +71,7 @@
           "headless": false,
           "date": "Aug 14, 2023",
           "messageText": [
-            "Gallery of components from the library, placeholders for now, swapping these for the real screenshots soon."
+            "Gallery of components from the library."
           ]
         },
         {
@@ -79,10 +79,20 @@
           "date": "Aug 14, 2023",
           "type": "gallery",
           "gallery": [
-            "https://placekitten.com/400/300",
-            "https://placekitten.com/401/300",
-            "https://placekitten.com/402/300",
-            "https://placekitten.com/400/301"
+            "/images/mla-Buttons.png",
+            "/images/mla-TextField.png",
+            "/images/mla-Dropdown.png",
+            "/images/mla-ColorPicker.png",
+            "/images/mla-StyleMenu.png",
+            "/images/mla-Snackbar.png",
+            "/images/mla-ModalAlert.png",
+            "/images/mla-Navigation.png",
+            "/images/mla-DragItem.png",
+            "/images/mla-GameCard.png",
+            "/images/mla-ChapterCard.png",
+            "/images/mla-LevelAccordion.png",
+            "/images/mla-ImageLibrary.png",
+            "/images/mla-AdminCategories.png"
           ]
         }
       ]

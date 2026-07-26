@@ -1,6 +1,9 @@
+import cx from "clsx";
 import styles from "./message.module.scss";
 import { Gallery } from "../gallery/gallery.component";
 import { Video } from "../video/video.component";
+import { getImageMeta } from "../../lib/assets";
+import { useImageLoaded } from "../../hooks/use-image-loaded";
 
 export interface MessageProps {
   headless?: boolean;
@@ -55,6 +58,9 @@ export const Message = ({
   messageText,
   avatarId,
 }: MessageProps) => {
+  const { isLoaded, markLoaded, registerImage } = useImageLoaded();
+  const imageMeta = getImageMeta(image);
+
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     onProfileClick?.(userId, event.currentTarget.getBoundingClientRect());
   };
@@ -110,11 +116,19 @@ export const Message = ({
             )}
             {type === "image" && image && (
               <div className={styles.imageWrap}>
+                {/* width/height come from assets.json so the browser knows
+                    the shape of the box to hold open — and shimmer — while
+                    the file is still on its way. */}
                 <img
-                  className={styles.image}
+                  className={cx(styles.image, { [styles.loading]: !isLoaded(image) })}
                   src={image}
+                  width={imageMeta?.width}
+                  height={imageMeta?.height}
                   alt=""
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  ref={registerImage(image)}
+                  onLoad={() => markLoaded(image)}
+                  onError={() => markLoaded(image)}
                 />
               </div>
             )}

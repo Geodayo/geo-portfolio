@@ -7,6 +7,9 @@
 // serverDetails below — a dynamic `/data/servers/${slug}.json` fetch could
 // resolve the path at runtime, an import can't. Adding a new project means
 // dropping the JSON in ./servers and adding a line here.
+//
+// ./assets.json sits alongside these but isn't content — it's generated media
+// metadata (`npm run assets`), and src/lib/assets.ts is what reads it.
 import about from "./about.json";
 import frontPage from "./frontpage.json";
 import servers from "./servers.json";

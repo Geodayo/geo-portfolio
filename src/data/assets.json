@@ -1,0 +1,316 @@
+{
+  "defaults": {
+    "video": {
+      "width": 1920,
+      "height": 1080,
+      "aspectRatio": 1.7778
+    }
+  },
+  "images": {
+    "/anonymous-icon.svg": {
+      "width": 64,
+      "height": 64,
+      "aspectRatio": 1
+    },
+    "/bot-icon.svg": {
+      "width": 64,
+      "height": 64,
+      "aspectRatio": 1
+    },
+    "/discord-temp-icon.jpg": {
+      "width": 736,
+      "height": 736,
+      "aspectRatio": 1
+    },
+    "/geo-wallpaper.jpg": {
+      "width": 2560,
+      "height": 1440,
+      "aspectRatio": 1.7778
+    },
+    "/images/AFFOA-06979.jpg": {
+      "width": 703,
+      "height": 469,
+      "aspectRatio": 1.4989
+    },
+    "/images/cynda-logo.png": {
+      "width": 50,
+      "height": 50,
+      "aspectRatio": 1
+    },
+    "/images/designportfolio-center-1.png": {
+      "width": 1772,
+      "height": 890,
+      "aspectRatio": 1.991
+    },
+    "/images/designportfolio-center-2.png": {
+      "width": 1787,
+      "height": 717,
+      "aspectRatio": 2.4923
+    },
+    "/images/designportfolio-center-3.png": {
+      "width": 1743,
+      "height": 823,
+      "aspectRatio": 2.1179
+    },
+    "/images/designportfolio-center-4.png": {
+      "width": 1726,
+      "height": 813,
+      "aspectRatio": 2.123
+    },
+    "/images/designportfolio-center-5.png": {
+      "width": 1736,
+      "height": 988,
+      "aspectRatio": 1.7571
+    },
+    "/images/designportfolio-center-6.png": {
+      "width": 1699,
+      "height": 972,
+      "aspectRatio": 1.7479
+    },
+    "/images/designportfolio-center-7.png": {
+      "width": 1794,
+      "height": 641,
+      "aspectRatio": 2.7988
+    },
+    "/images/designportfolio-center-8.png": {
+      "width": 1812,
+      "height": 104,
+      "aspectRatio": 17.4231
+    },
+    "/images/fabricventures_1.png": {
+      "width": 1803,
+      "height": 837,
+      "aspectRatio": 2.1541
+    },
+    "/images/fabricventures_2.png": {
+      "width": 1809,
+      "height": 821,
+      "aspectRatio": 2.2034
+    },
+    "/images/fabricventures_3.png": {
+      "width": 1815,
+      "height": 1029,
+      "aspectRatio": 1.7638
+    },
+    "/images/fabricventures_4.png": {
+      "width": 1826,
+      "height": 1107,
+      "aspectRatio": 1.6495
+    },
+    "/images/fabricventures_5.png": {
+      "width": 1027,
+      "height": 936,
+      "aspectRatio": 1.0972
+    },
+    "/images/fabricventures_6.png": {
+      "width": 1802,
+      "height": 512,
+      "aspectRatio": 3.5195
+    },
+    "/images/fabricventures_logo.jfif": {
+      "width": 200,
+      "height": 200,
+      "aspectRatio": 1
+    },
+    "/images/mitandfit-info-home-1.png": {
+      "width": 1643,
+      "height": 1182,
+      "aspectRatio": 1.39
+    },
+    "/images/mitandfit-info-home-2.png": {
+      "width": 1521,
+      "height": 898,
+      "aspectRatio": 1.6938
+    },
+    "/images/mitandfit-info-home-3.png": {
+      "width": 991,
+      "height": 744,
+      "aspectRatio": 1.332
+    },
+    "/images/mitandfit-info-home-4.png": {
+      "width": 947,
+      "height": 869,
+      "aspectRatio": 1.0898
+    },
+    "/images/mitandfit-info-v2-accordion-basic.png": {
+      "width": 1297,
+      "height": 975,
+      "aspectRatio": 1.3303
+    },
+    "/images/mitandfit-info-v2-accordion.png": {
+      "width": 1425,
+      "height": 745,
+      "aspectRatio": 1.9128
+    },
+    "/images/mitandfit-info-v2-banner.png": {
+      "width": 1503,
+      "height": 451,
+      "aspectRatio": 3.3326
+    },
+    "/images/mitandfit-info-v2-contact.png": {
+      "width": 1501,
+      "height": 986,
+      "aspectRatio": 1.5223
+    },
+    "/images/mitandfit-info-v2-grid-images.png": {
+      "width": 1465,
+      "height": 1122,
+      "aspectRatio": 1.3057
+    },
+    "/images/mitandfit-info-v2-text-with-image.png": {
+      "width": 1508,
+      "height": 646,
+      "aspectRatio": 2.3344
+    },
+    "/images/mitandfit-learning-hub-alerts.png": {
+      "width": 1430,
+      "height": 571,
+      "aspectRatio": 2.5044
+    },
+    "/images/mitandfit-learning-hub-badges-modal-2.png": {
+      "width": 768,
+      "height": 499,
+      "aspectRatio": 1.5391
+    },
+    "/images/mitandfit-learning-hub-badges-modal.png": {
+      "width": 494,
+      "height": 667,
+      "aspectRatio": 0.7406
+    },
+    "/images/mitandfit-learning-hub-badges.png": {
+      "width": 1226,
+      "height": 448,
+      "aspectRatio": 2.7366
+    },
+    "/images/mitandfit-learning-hub-buttons.png": {
+      "width": 1428,
+      "height": 627,
+      "aspectRatio": 2.2775
+    },
+    "/images/mitandfit-learning-hub-cards-desk.png": {
+      "width": 1386,
+      "height": 778,
+      "aspectRatio": 1.7815
+    },
+    "/images/mitandfit-learning-hub-cards-mobile.png": {
+      "width": 1282,
+      "height": 611,
+      "aspectRatio": 2.0982
+    },
+    "/images/mitandfit-learning-hub-footer.png": {
+      "width": 1442,
+      "height": 783,
+      "aspectRatio": 1.8416
+    },
+    "/images/mitandfit-learning-hub-forms.png": {
+      "width": 1024,
+      "height": 707,
+      "aspectRatio": 1.4484
+    },
+    "/images/mitandfit-learning-hub-modal-1.png": {
+      "width": 624,
+      "height": 512,
+      "aspectRatio": 1.2188
+    },
+    "/images/mitandfit-learning-hub-modal-2.png": {
+      "width": 614,
+      "height": 459,
+      "aspectRatio": 1.3377
+    },
+    "/images/mitandfit-learning-hub-nav.png": {
+      "width": 1443,
+      "height": 785,
+      "aspectRatio": 1.8382
+    },
+    "/images/mitandfit-learning-hub-text-buttons.png": {
+      "width": 740,
+      "height": 479,
+      "aspectRatio": 1.5449
+    },
+    "/images/mitandfit-learning-hub-text-fields.png": {
+      "width": 992,
+      "height": 672,
+      "aspectRatio": 1.4762
+    },
+    "/images/mla-AdminCategories.png": {
+      "width": 2006,
+      "height": 1054,
+      "aspectRatio": 1.9032
+    },
+    "/images/mla-Buttons.png": {
+      "width": 366,
+      "height": 318,
+      "aspectRatio": 1.1509
+    },
+    "/images/mla-ChapterCard.png": {
+      "width": 493,
+      "height": 350,
+      "aspectRatio": 1.4086
+    },
+    "/images/mla-ColorPicker.png": {
+      "width": 178,
+      "height": 182,
+      "aspectRatio": 0.978
+    },
+    "/images/mla-DragItem.png": {
+      "width": 262,
+      "height": 272,
+      "aspectRatio": 0.9632
+    },
+    "/images/mla-Dropdown.png": {
+      "width": 522,
+      "height": 165,
+      "aspectRatio": 3.1636
+    },
+    "/images/mla-GameCard.png": {
+      "width": 341,
+      "height": 416,
+      "aspectRatio": 0.8197
+    },
+    "/images/mla-ImageLibrary.png": {
+      "width": 1145,
+      "height": 715,
+      "aspectRatio": 1.6014
+    },
+    "/images/mla-LevelAccordion.png": {
+      "width": 785,
+      "height": 386,
+      "aspectRatio": 2.0337
+    },
+    "/images/mla-ModalAlert.png": {
+      "width": 835,
+      "height": 417,
+      "aspectRatio": 2.0024
+    },
+    "/images/mla-Navigation.png": {
+      "width": 1170,
+      "height": 151,
+      "aspectRatio": 7.7483
+    },
+    "/images/mla-Snackbar.png": {
+      "width": 1131,
+      "height": 262,
+      "aspectRatio": 4.3168
+    },
+    "/images/mla-StyleMenu.png": {
+      "width": 215,
+      "height": 201,
+      "aspectRatio": 1.0697
+    },
+    "/images/mla-TextField.png": {
+      "width": 569,
+      "height": 319,
+      "aspectRatio": 1.7837
+    },
+    "/images/my-language-app-logo.png": {
+      "width": 256,
+      "height": 163,
+      "aspectRatio": 1.5706
+    },
+    "/totoro-profile.jpg": {
+      "width": 1000,
+      "height": 960,
+      "aspectRatio": 1.0417
+    }
+  }
+}

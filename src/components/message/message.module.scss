@@ -1,3 +1,5 @@
+@use "../../styles/skeleton" as *;
+
 .divider {
   z-index: 1;
   height: 0;
@@ -123,8 +125,19 @@
 
 .image {
   position: relative !important;
+  // Keep both dimensions auto so the intrinsic size from the width/height
+  // attributes drives the box and max-height scales it proportionally —
+  // without this, the attribute height would be treated as specified and a
+  // tall image would come out squashed.
+  width: auto;
+  height: auto;
   object-fit: contain;
   max-height: 350px;
   border-radius: 3px;
   cursor: pointer;
+}
+
+// Painted in the reserved box until the image itself covers it up.
+.loading {
+  @include skeleton-surface;
 }

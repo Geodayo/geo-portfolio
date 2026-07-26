@@ -1,4 +1,8 @@
+import { useState } from "react";
+import cx from "clsx";
 import styles from "./video.module.scss";
+import { Skeleton } from "../skeleton/skeleton.component";
+import { VIDEO_ASSET } from "../../lib/assets";
 
 export interface VideoProps {
   url: string;
@@ -61,6 +65,7 @@ const getVideoInfo = (url: string): { platform: VideoPlatform; videoId: string |
 
 export const Video = ({ url }: VideoProps) => {
   const { platform, videoId } = getVideoInfo(url);
+  const [loaded, setLoaded] = useState(false);
 
   if (!platform || !videoId) {
     return (
@@ -79,13 +84,21 @@ export const Video = ({ url }: VideoProps) => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.videoWrapper}>
+      {/* Every embed is 16:9 (VIDEO_ASSET in assets.json), so the wrapper can
+          hold the player's box open — and shimmer inside it — before the
+          iframe has anything to show. */}
+      <div
+        className={styles.videoWrapper}
+        style={{ aspectRatio: VIDEO_ASSET.aspectRatio }}
+      >
+        {!loaded && <Skeleton className={styles.skeleton} />}
         <iframe
-          className={styles.video}
+          className={cx(styles.video, { [styles.videoLoaded]: loaded })}
           src={embedUrl}
           title="Video player"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
+          onLoad={() => setLoaded(true)}
         />
       </div>
     </div>

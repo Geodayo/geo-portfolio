@@ -123,15 +123,31 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
   // below) and pushes the URL to match, so by the time this effect would
   // re-run from that URL change, it just re-derives the same channel — no
   // fighting, just an idempotent confirmation.
+  //
+  // "Idempotent" has to mean by *reference*, not just by value. A soft
+  // navigation hands us a fresh data object, so findInitialChannel returns a
+  // new object for the same logical channel. Storing it would change
+  // activeChannel's identity, which re-runs the staged-reveal effect below
+  // and blanks the whole message list for a frame. Keep the previous object
+  // whenever it describes the same channel.
   useEffect(() => {
     const nextChannels = isHome ? frontPageData?.channels : activeServerData?.channels;
-    setActiveChannel(findInitialChannel(nextChannels ?? [], initialChannelSlug));
+    setActiveChannel((prev) => {
+      const next = findInitialChannel(nextChannels ?? [], initialChannelSlug);
+      return prev?.text === next?.text ? prev : next;
+    });
   }, [isHome, activeServerData, frontPageData, initialChannelSlug]);
 
   // Stage the reveal of a channel's own messages one at a time, honoring
   // each message's optional `delay` (ms since the previous message
   // appeared). Messages without a delay reveal right away, so channels that
   // don't opt in behave exactly as before (everything shows up at once).
+  //
+  // "Right away" has to mean *this* render, not setTimeout(fn, 0). A zero
+  // delay scheduled through a timer is a macrotask, so it lands after the
+  // browser has already painted a frame with nothing revealed — the message
+  // list visibly blanks and comes back. So reveal the leading run of
+  // no-delay messages synchronously and only put the rest on timers.
   useEffect(() => {
     const channelMessages = activeChannel?.messages ?? [];
 
@@ -141,13 +157,24 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
       return;
     }
 
-    setRevealedCount(0);
-    setIsStagingMessages(true);
+    // Index of the first message that actually wants to wait; everything
+    // before it is due at t=0 and can be shown without a paint in between.
+    const firstDelayed = channelMessages.findIndex(
+      (message) => (message.delay ?? 0) > 0
+    );
+    const immediateCount =
+      firstDelayed === -1 ? channelMessages.length : firstDelayed;
+
+    setRevealedCount(immediateCount);
+    setIsStagingMessages(immediateCount < channelMessages.length);
+
+    if (immediateCount >= channelMessages.length) return;
 
     const timeouts: ReturnType<typeof setTimeout>[] = [];
     let elapsed = 0;
     channelMessages.forEach((message, index) => {
       elapsed += message.delay ?? 0;
+      if (index < immediateCount) return;
       timeouts.push(
         setTimeout(() => {
           setRevealedCount(index + 1);

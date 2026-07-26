@@ -1,0 +1,41 @@
+// Shared look for the loading placeholders shown while an image or video
+// embed is still downloading.
+//
+// Two ways to apply it, depending on whether the thing being loaded already
+// reserves its own box:
+//
+//   - <img> elements get the shimmer as their own background (see
+//     `skeleton-surface`). Given width/height attributes from assets.json the
+//     browser lays the image out at its final size before a single byte
+//     arrives, so its background *is* the placeholder — no extra element, and
+//     no chance of the two drifting out of alignment.
+//   - Everything else (iframe embeds, which have no intrinsic size) renders
+//     the <Skeleton> component into a box the layout sizes itself.
+
+@mixin skeleton-surface {
+  // Both layers are alpha-only, so the placeholder tints whatever is behind
+  // it rather than punching an opaque grey rectangle into the message list.
+  background-color: hsl(0 0% 100% / 0.035);
+  background-image: linear-gradient(
+    100deg,
+    transparent 25%,
+    hsl(0 0% 100% / 0.07) 45%,
+    transparent 65%
+  );
+  background-size: 250% 100%;
+  background-repeat: no-repeat;
+  animation: skeleton-shimmer 1.4s linear infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+
+  @keyframes skeleton-shimmer {
+    from {
+      background-position: 150% 0;
+    }
+    to {
+      background-position: -50% 0;
+    }
+  }
+}

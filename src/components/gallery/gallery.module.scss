@@ -1,3 +1,5 @@
+@use "../../styles/skeleton" as *;
+
 .container {
   width: 100%;
   padding: 20px;
@@ -19,6 +21,8 @@
   }
 }
 
+// `height: auto` alongside each <img>'s width/height attributes is what lets
+// the browser reserve the right height per tile before the file downloads.
 .image {
   display: block;
   width: 100%;
@@ -36,6 +40,11 @@
   }
 }
 
+// Painted in the reserved box until the image itself covers it up.
+.loading {
+  @include skeleton-surface;
+}
+
 .modal {
   position: fixed;
   top: 0;
@@ -51,6 +60,10 @@
 }
 
 .fullSizeImage {
+  // width/height stay auto so the intrinsic size from the <img> attributes
+  // drives the box, and both max constraints shrink it proportionally.
+  width: auto;
+  height: auto;
   max-width: 90%;
   max-height: 90vh;
   object-fit: contain;

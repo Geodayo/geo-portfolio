@@ -20,6 +20,22 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Media assets
+
+`src/data/assets.json` holds the intrinsic width, height and aspect ratio of
+every file under `public/`. The image and video components read it to reserve
+the exact box a picture will fill and shimmer a skeleton in it while the file
+downloads, so nothing on the page shifts when it arrives.
+
+After adding, replacing or deleting anything in `public/`, regenerate it:
+
+```bash
+npm run assets
+```
+
+Video embeds (YouTube, Vimeo) have no file to measure — they're all 16:9, which
+lives in the `defaults.video` entry of the same file.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

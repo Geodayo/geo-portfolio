@@ -8,5 +8,10 @@
     "slug": "fabric-ventures",
     "name": "Fabric Ventures",
     "thumbnail": "/images/fabricventures_logo.jfif"
+  },
+  {
+    "slug": "my-language-app",
+    "name": "My Language App",
+    "thumbnail": "/images/my-language-app-logo.png"
   }
 ]

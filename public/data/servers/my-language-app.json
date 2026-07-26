@@ -1,0 +1,92 @@
+{
+  "channels": [
+    {
+      "text": "general",
+      "active": true,
+      "messages": [
+        {
+          "headless": false,
+          "date": "Feb 15, 2023",
+          "messageText": [
+            "This is My Language App, a freelance project I started in February 2023.",
+            "It's a language learning app I built for a client whose son is autistic and has a speech impediment. The idea was to give him a way to build sentences and practice language through custom games made just for him.",
+            "I worked directly from the client's designs to bring their vision to life, and built out both the frontend and backend myself."
+          ]
+        },
+        {
+          "headless": true,
+          "date": "Feb 15, 2023",
+          "type": "video",
+          "video": "https://www.youtube.com/watch?v=VfIuxWhAbwE"
+        },
+        {
+          "headless": false,
+          "date": "Feb 15, 2023",
+          "messageText": [
+            "Quick preview above of how the app works."
+          ]
+        },
+        {
+          "headless": false,
+          "date": "Apr 10, 2023",
+          "messageText": [
+            "Backend is Laravel with Sanctum handling auth. Built a full CRUD API around all the pieces that make up a lesson: vocabulary words, grammar categories and components, sentence formulations, chapters, and levels.",
+            "There's also a permissions system with roles (admin, supervisor, regular user) tied to workgroups, so a caregiver or educator can manage content and check on progress without ever touching code."
+          ]
+        },
+        {
+          "headless": false,
+          "date": "Jun 05, 2023",
+          "messageText": [
+            "Spent this stretch on the actual game engine, drag and drop games and multiple choice games, both built to snap sentence pieces together correctly.",
+            "Every level and chapter gets assembled from a library of grammar components, so games can be reordered, swapped, and evaluated. There's a whole game evaluation system behind it to score attempts and track how he's doing over time."
+          ]
+        },
+        {
+          "headless": false,
+          "date": "Aug 14, 2023",
+          "messageText": [
+            "On the frontend I built out a full component library in React + TypeScript and documented/tested every piece in Storybook before wiring it into real pages: buttons, cards, dropdowns, modals, snackbars, color pickers, side sheets, all of it.",
+            "That made it a lot faster to build the admin pages (users, workgroups, categories, components, formulations) and kept the actual game pages he plays consistent and polished."
+          ]
+        },
+        {
+          "headless": false,
+          "date": "Oct 20, 2023",
+          "messageText": [
+            "Wrapped this one up in October after building it out end to end since Feb. Skill checklist for this project, straight from the source:",
+            "✅ Laravel   ✅ PHP   ✅ REST APIs   ✅ SQL",
+            "✅ React.js   ✅ TypeScript   ✅ SASS   ✅ Storybooks",
+            "✅ Agile Methodologies   ✅ Project Management   ✅ Communication",
+            "Really rewarding project, knowing exactly who was going to be using what I was building."
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Components",
+      "active": false,
+      "messages": [
+        {
+          "headless": false,
+          "date": "Aug 14, 2023",
+          "messageText": [
+            "Gallery of components from the library, placeholders for now, swapping these for the real screenshots soon."
+          ]
+        },
+        {
+          "headless": true,
+          "date": "Aug 14, 2023",
+          "type": "gallery",
+          "gallery": [
+            "https://placekitten.com/400/300",
+            "https://placekitten.com/401/300",
+            "https://placekitten.com/402/300",
+            "https://placekitten.com/400/301"
+          ]
+        }
+      ]
+    }
+  ],
+  "users": {}
+}

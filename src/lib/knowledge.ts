@@ -14,6 +14,7 @@ import usersData from "../../public/data/users.json";
 import serversData from "../../public/data/servers.json";
 import cyndaMediaLab from "../../public/data/servers/cynda-media-lab.json";
 import fabricVentures from "../../public/data/servers/fabric-ventures.json";
+import myLanguageApp from "../../public/data/servers/my-language-app.json";
 
 interface ServerSummary {
   slug: string;
@@ -48,6 +49,7 @@ interface UserProfileData {
 const SERVER_DETAILS: Record<string, ServerDetail> = {
   "cynda-media-lab": cyndaMediaLab as ServerDetail,
   "fabric-ventures": fabricVentures as ServerDetail,
+  "my-language-app": myLanguageApp as ServerDetail,
 };
 
 // Cached for the lifetime of the serverless instance so we don't rebuild the

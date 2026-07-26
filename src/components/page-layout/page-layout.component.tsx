@@ -13,9 +13,12 @@ import { UserProfile, type UserProfileProps } from "../user-profile/user-profile
 import { sendChatMessage, type ChatHistoryMessage } from "../../services/chat-api";
 import { usePointerTarget } from "../../hooks/use-pointer-target";
 import { slugifyChannelText } from "../../lib/slugify";
+import { users } from "../../data";
 import cx from "clsx";
 
 type UserProfileData = Omit<UserProfileProps, "onSendMessage" | "onClose">;
+
+const profiles = users as unknown as Record<string, UserProfileData>;
 
 const POPOVER_WIDTH = 300;
 const POPOVER_ESTIMATED_HEIGHT = 420;
@@ -107,7 +110,6 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
   );
   const [sentMessages, setSentMessages] = useState<Record<string, MessageProps[]>>({});
   const [pendingReplies, setPendingReplies] = useState<Record<string, boolean>>({});
-  const [profiles, setProfiles] = useState<Record<string, UserProfileData> | null>(null);
   const [activeProfile, setActiveProfile] = useState<{ id: string; rect: DOMRect } | null>(null);
   const [revealedCount, setRevealedCount] = useState(0);
   const [isStagingMessages, setIsStagingMessages] = useState(false);
@@ -160,13 +162,6 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
   }, [activeChannel]);
 
   useEffect(() => {
-    fetch("/data/users.json")
-      .then((res) => res.json())
-      .then((json) => setProfiles(json))
-      .catch(() => setProfiles({}));
-  }, []);
-
-  useEffect(() => {
     if (!activeProfile) return;
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setActiveProfile(null);
@@ -176,7 +171,7 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
   }, [activeProfile]);
 
   const handleProfileClick = (userId: string, rect: DOMRect) => {
-    if (!profiles?.[userId]) return;
+    if (!profiles[userId]) return;
     setActiveProfile({ id: userId, rect });
   };
 
@@ -359,16 +354,36 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
 
   const isReplyPending = pendingReplies[channelKey] ?? false;
 
-  // Keep the message list pinned to the bottom whenever new content shows
-  // up — a newly-revealed message, a sent message, a bot reply, or either
-  // typing indicator appearing/disappearing — instead of leaving the
-  // visitor scrolled wherever they were (which, right after sending a
-  // message, meant the new one landed below the fold).
+  // Auto-scrolling is for LIVE chat only — a message the visitor just sent,
+  // GeoBot's reply, or its typing indicator — since those land below the
+  // fold otherwise. A channel's own scripted messages must not drag the view
+  // down: opening a long channel should start at the top and let the visitor
+  // read from the beginning, staged reveals included.
+  const scrollState = useRef({
+    key: channelKey,
+    count: (sentMessages[channelKey] ?? []).length,
+  });
+
   useEffect(() => {
     const el = messagesWrapperRef.current;
     if (!el) return;
-    el.scrollTop = el.scrollHeight;
-  }, [channelKey, displayedMessages.length, isStagingMessages, isReplyPending]);
+
+    const sentCount = (sentMessages[channelKey] ?? []).length;
+    const previous = scrollState.current;
+    scrollState.current = { key: channelKey, count: sentCount };
+
+    // Switched channel (or server): show the new one from its start rather
+    // than inheriting wherever the previous channel was scrolled to.
+    if (previous.key !== channelKey) {
+      el.scrollTop = 0;
+      return;
+    }
+
+    // Same channel, and the conversation just moved — follow it down.
+    if (sentCount > previous.count || isReplyPending) {
+      el.scrollTop = el.scrollHeight;
+    }
+  }, [channelKey, sentMessages, isReplyPending]);
 
   return (
     <div className={styles.container} ref={containerRef}>
@@ -514,7 +529,7 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
           ></UsersList>
         </div>
       </div>
-      {activeProfile && profiles?.[activeProfile.id] && (
+      {activeProfile && profiles[activeProfile.id] && (
         <div className={styles.profileBackdrop} onClick={closeProfile}>
           <div
             className={styles.profilePopover}

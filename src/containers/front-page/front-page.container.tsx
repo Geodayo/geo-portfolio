@@ -1,8 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { PageLayout, type ServerDetailData, type ServerSummary } from "../../components/page-layout/page-layout.component";
 import { PageFrame } from "../../components/page-frame/page-frame.component";
+import { frontPage, servers as serversData, serverDetails } from "../../data";
+
+const servers = serversData as ServerSummary[];
+const frontPageData = frontPage as unknown as ServerDetailData;
 
 export interface FrontPageProps {
   serverSlug: string | null;
@@ -15,48 +19,23 @@ export interface FrontPageProps {
 export function FrontPage({ serverSlug, channelSlug }: FrontPageProps) {
   const router = useRouter();
 
-  const [servers, setServers] = useState<ServerSummary[] | null>(null);
-  const [activeServerData, setActiveServerData] = useState<ServerDetailData | null>(null);
-  const [frontPageData, setFrontPageData] = useState<ServerDetailData | null>(null);
-
-  useEffect(() => {
-    fetch("/data/servers.json")
-      .then((res) => res.json())
-      .then((json) => setServers(json));
-  }, []);
-
-  useEffect(() => {
-    fetch("/data/frontpage.json")
-      .then((res) => res.json())
-      .then((json) => setFrontPageData(json));
-  }, []);
-
-  const activeSlug = serverSlug && servers?.some((server) => server.slug === serverSlug)
+  const activeSlug = serverSlug && servers.some((server) => server.slug === serverSlug)
     ? serverSlug
     : null;
 
   useEffect(() => {
-    if (!servers) return;
     if (serverSlug && !activeSlug) {
       router.replace("/");
     }
-  }, [servers, serverSlug, activeSlug, router]);
+  }, [serverSlug, activeSlug, router]);
 
-  useEffect(() => {
-    if (!activeSlug) {
-      setActiveServerData(null);
-      return;
-    }
-    setActiveServerData(null);
-    fetch(`/data/servers/${activeSlug}.json`)
-      .then((res) => res.json())
-      .then((json) => setActiveServerData(json));
-  }, [activeSlug]);
+  const activeServerData = activeSlug
+    ? (serverDetails[activeSlug] as ServerDetailData) ?? null
+    : null;
 
   return (
     <>
     <PageFrame headerTitle="Geo Portfolio">
-    {servers && (
         <PageLayout
             servers={servers}
             activeServerSlug={activeSlug}
@@ -72,7 +51,6 @@ export function FrontPage({ serverSlug, channelSlug }: FrontPageProps) {
               if (activeSlug) router.push(`/${activeSlug}/${newChannelSlug}`);
             }}
         ></PageLayout>
-    )}
     </PageFrame>
     </>
   )

@@ -2,19 +2,14 @@
 // off disk at request time (fs.readFileSync against `public/data`), which
 // works for a plain Vercel Node function but isn't guaranteed to survive
 // Next.js's build-time file tracing into the deployed function bundle.
-// Importing the JSON directly makes webpack bundle it with the route, so
-// it's always present at runtime — and the files still live under
-// `public/data` so the frontend can also fetch them client-side.
-//
-// Trade-off: each project's detail file needs an explicit import + entry in
-// SERVER_DETAILS below. Adding a new project means adding both the JSON file
-// under public/data/servers/ and a line here.
-import aboutData from "../../public/data/about.json";
-import usersData from "../../public/data/users.json";
-import serversData from "../../public/data/servers.json";
-import cyndaMediaLab from "../../public/data/servers/cynda-media-lab.json";
-import fabricVentures from "../../public/data/servers/fabric-ventures.json";
-import myLanguageApp from "../../public/data/servers/my-language-app.json";
+// Importing the JSON from src/data instead makes webpack bundle it with the
+// route, so it's always present at runtime.
+import {
+  about as aboutData,
+  users as usersData,
+  servers as serversData,
+  serverDetails,
+} from "../data";
 import { slugifyChannelText } from "./slugify";
 
 interface ServerSummary {
@@ -65,11 +60,7 @@ export interface PageContext {
   channelName: string;
 }
 
-const SERVER_DETAILS: Record<string, ServerDetail> = {
-  "cynda-media-lab": cyndaMediaLab as ServerDetail,
-  "fabric-ventures": fabricVentures as ServerDetail,
-  "my-language-app": myLanguageApp as ServerDetail,
-};
+const SERVER_DETAILS = serverDetails as Record<string, ServerDetail>;
 
 // Cached for the lifetime of the serverless instance so we don't rebuild the
 // prompt on every request. Resets naturally on cold start / redeploy.

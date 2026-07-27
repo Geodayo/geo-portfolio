@@ -56,12 +56,13 @@
           "date": "Oct 23, 2023",
           "type": "gallery",
           "gallery": [
-            "https://placecats.com/600/400",
-            "https://placecats.com/600/450",
-            "https://placecats.com/600/380",
-            "https://placecats.com/600/500",
-            "https://placecats.com/600/420",
-            "https://placecats.com/600/460"
+            "/images/vdf-buttons.png",
+            "/images/vdf-shopCard.png",
+            "/images/vdf-filter.png",
+            "/images/vdf-shopLayoutGrid.png",
+            "/images/vdf-shopInfo.png",
+            "/images/vdf-portfolioCard.png",
+            "/images/vdf-footer.png"
           ]
         },        
         {

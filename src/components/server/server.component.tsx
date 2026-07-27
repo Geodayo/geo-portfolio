@@ -6,21 +6,23 @@ export interface ServerProps {
   thumbnail: string;
   active?: boolean;
   /**
-   * Drops the light placeholder fill behind the thumbnail, for icons that are
-   * a transparent glyph rather than a full-bleed image — otherwise the grey
-   * circle meant to hold the space while a photo loads shows up as a disc
-   * behind the artwork.
+   * For servers whose thumbnail is a bare glyph on transparency rather than a
+   * full-bleed logo. Instead of the light placeholder fill (which is there to
+   * hold the space while a photo loads, and would show as a disc behind the
+   * artwork), the tile gets its own grey background that turns blurple on
+   * hover and while active — the same treatment Discord gives its own
+   * icon-only buttons.
    */
-  transparent?: boolean;
+  iconOnly?: boolean;
   serverLink: () => void;
 }
 
-export const Server = ({ name, thumbnail, active = false, transparent = false, serverLink }: ServerProps) => {
+export const Server = ({ name, thumbnail, active = false, iconOnly = false, serverLink }: ServerProps) => {
   return (
     <div className={cx(styles.container, { [styles.active]: active })}>
       <span className={styles.pill}></span>
       <div
-        className={cx(styles.thumbnail, { [styles.transparent]: transparent })}
+        className={cx(styles.thumbnail, { [styles.iconOnly]: iconOnly })}
         style={{ backgroundImage: `url(${thumbnail})` }}
         onClick={serverLink}
       >

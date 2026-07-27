@@ -53,6 +53,9 @@ export interface ServerSummary {
   slug: string;
   name: string;
   thumbnail: string;
+  /** Set in servers.json when the thumbnail is a bare glyph rather than a
+   * full-bleed logo — see Server's `iconOnly` prop for what it changes. */
+  iconOnly?: boolean;
 }
 
 export interface ServerChannel {
@@ -472,7 +475,7 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
             <Server
               name={"Front Page"}
               thumbnail={"/images/front-page-logo.svg"}
-              transparent
+              iconOnly
               active={isHome}
               serverLink={() => onSelectServer(null)}
             ></Server>
@@ -487,6 +490,7 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
                 <Server
                   name={server.name}
                   thumbnail={server.thumbnail}
+                  iconOnly={server.iconOnly}
                   active={activeServerSlug === server.slug}
                   serverLink={() => onSelectServer(server.slug)}
                 ></Server>

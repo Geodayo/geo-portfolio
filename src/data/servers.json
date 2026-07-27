@@ -21,6 +21,7 @@
     "slug": "smaller-projects",
     "name": "Smaller Projects",
     "thumbnail": "/images/smaller-projects-logo.svg",
+    "iconOnly": true,
     "aliases": ["Vincent Di Fate Store", "Vincent Di Fate", "VDF"]
   }
 ]

@@ -52,9 +52,21 @@
 // .name {
 //   display: none;
 // }
-.thumbnail.transparent {
-  background-color: transparent;
+// Icon-only tiles (see Server's `iconOnly` prop): the artwork is a white glyph
+// on transparency, so the tile itself supplies the colour — grey at rest,
+// blurple once you're hovering it or it's the server you're on.
+.thumbnail.iconOnly {
+  background-color: #313338;
   background-size: contain;
+  transition: border-radius .1s ease-out, background-color .15s ease-out;
+
+  &:hover {
+    background-color: #5865f2;
+  }
+}
+
+.container.active .thumbnail.iconOnly {
+  background-color: #5865f2;
 }
 
 .name {

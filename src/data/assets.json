@@ -312,6 +312,41 @@
       "height": 512,
       "aspectRatio": 1
     },
+    "/images/vdf-buttons.png": {
+      "width": 429,
+      "height": 294,
+      "aspectRatio": 1.4592
+    },
+    "/images/vdf-filter.png": {
+      "width": 420,
+      "height": 374,
+      "aspectRatio": 1.123
+    },
+    "/images/vdf-footer.png": {
+      "width": 1340,
+      "height": 161,
+      "aspectRatio": 8.323
+    },
+    "/images/vdf-portfolioCard.png": {
+      "width": 964,
+      "height": 311,
+      "aspectRatio": 3.0997
+    },
+    "/images/vdf-shopCard.png": {
+      "width": 332,
+      "height": 460,
+      "aspectRatio": 0.7217
+    },
+    "/images/vdf-shopInfo.png": {
+      "width": 437,
+      "height": 338,
+      "aspectRatio": 1.2929
+    },
+    "/images/vdf-shopLayoutGrid.png": {
+      "width": 1507,
+      "height": 986,
+      "aspectRatio": 1.5284
+    },
     "/totoro-profile.jpg": {
       "width": 1000,
       "height": 960,

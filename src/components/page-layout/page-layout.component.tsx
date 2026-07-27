@@ -86,17 +86,23 @@ const BOT_NAME = "GeoBot";
 const BOT_THUMBNAIL = "/bot-icon.svg";
 const ANONYMOUS_THUMBNAIL = "/anonymous-icon.svg";
 
+function findChannelBySlug(
+  channels: ServerChannel[],
+  slug: string | null
+): ServerChannel | undefined {
+  if (!slug) return undefined;
+  return channels.find((channel) => slugifyChannelText(channel.text) === slug);
+}
+
 function findInitialChannel(
   channels: ServerChannel[],
   initialChannelSlug: string | null
 ): ServerChannel | undefined {
-  if (initialChannelSlug) {
-    const match = channels.find(
-      (channel) => slugifyChannelText(channel.text) === initialChannelSlug
-    );
-    if (match) return match;
-  }
-  return channels.find((channel) => channel.active) ?? channels[0];
+  return (
+    findChannelBySlug(channels, initialChannelSlug) ??
+    channels.find((channel) => channel.active) ??
+    channels[0]
+  );
 }
 
 /**
@@ -122,47 +128,57 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
   const [mobileOpen, setMobileOpen] = useState(false);
   const isHome = activeServerSlug === null;
   const channels = isHome ? frontPageData?.channels ?? [] : activeServerData?.channels ?? [];
-  const initialChannel = findInitialChannel(channels, initialChannelSlug);
-  const [activeChannel, setActiveChannel] = useState<ServerChannel | undefined>(
-    initialChannel
+
+  // The visitor's own channel pick, held as a *slug* rather than as the
+  // channel object. A slug compares by value, so re-deriving the channel from
+  // a fresh copy of the data can't silently change its identity — which is
+  // what used to restart the staged reveal below and blank the message list.
+  //
+  // It's an optimistic override, not the source of truth: clicking a channel
+  // on a server page also pushes the URL, and the router is a round-trip
+  // behind. This paints the click immediately; `urlKey` below hands authority
+  // back the moment the URL actually moves. On the Front Page there's no
+  // channel route at all (see onSelectChannel in the container), so there this
+  // is the only thing tracking the selection.
+  const [selectedChannelSlug, setSelectedChannelSlug] = useState<string | null>(
+    null
   );
+
+  // Whatever the URL currently says, as one value. Any change to it — browser
+  // back/forward, a direct link, switching servers — means the visitor
+  // navigated by some route other than clicking a channel, so the stale
+  // override has to go. (Including the server is what stops a leftover pick
+  // from the Front Page resolving against a same-named channel elsewhere.)
+  const urlKey = `${activeServerSlug ?? "home"}::${initialChannelSlug ?? ""}`;
+  const [seenUrlKey, setSeenUrlKey] = useState(urlKey);
+
+  let selection = selectedChannelSlug;
+  if (seenUrlKey !== urlKey) {
+    setSeenUrlKey(urlKey);
+    setSelectedChannelSlug(null);
+    // Used for this render too, not just the re-render React schedules from
+    // the setState above — the URL wins starting now.
+    selection = null;
+  }
+
+  const activeChannel =
+    findChannelBySlug(channels, selection) ??
+    findInitialChannel(channels, initialChannelSlug);
+
   const [sentMessages, setSentMessages] = useState<Record<string, MessageProps[]>>({});
   const [pendingReplies, setPendingReplies] = useState<Record<string, boolean>>({});
   const [activeProfile, setActiveProfile] = useState<{ id: string; rect: DOMRect } | null>(null);
   // Seeded, not 0 — see immediateRevealCount. The first render (server and
   // client) must already contain the messages that aren't waiting on a delay.
   const [revealedCount, setRevealedCount] = useState(() =>
-    immediateRevealCount(initialChannel)
+    immediateRevealCount(activeChannel)
   );
   const [isStagingMessages, setIsStagingMessages] = useState(
     () =>
-      immediateRevealCount(initialChannel) <
-      (initialChannel?.messages?.length ?? 0)
+      immediateRevealCount(activeChannel) <
+      (activeChannel?.messages?.length ?? 0)
   );
   const [pointerDismissed, setPointerDismissed] = useState(false);
-
-  // Re-derives the active channel whenever the server data changes (e.g.
-  // switching servers) or the URL's channel slug changes (e.g. browser
-  // back/forward between two channels of the same server, or a direct
-  // link). This is safe to also key off initialChannelSlug: an in-app
-  // channel click both sets activeChannel directly (see handleChannelSelect
-  // below) and pushes the URL to match, so by the time this effect would
-  // re-run from that URL change, it just re-derives the same channel — no
-  // fighting, just an idempotent confirmation.
-  //
-  // "Idempotent" has to mean by *reference*, not just by value. A soft
-  // navigation hands us a fresh data object, so findInitialChannel returns a
-  // new object for the same logical channel. Storing it would change
-  // activeChannel's identity, which re-runs the staged-reveal effect below
-  // and blanks the whole message list for a frame. Keep the previous object
-  // whenever it describes the same channel.
-  useEffect(() => {
-    const nextChannels = isHome ? frontPageData?.channels : activeServerData?.channels;
-    setActiveChannel((prev) => {
-      const next = findInitialChannel(nextChannels ?? [], initialChannelSlug);
-      return prev?.text === next?.text ? prev : next;
-    });
-  }, [isHome, activeServerData, frontPageData, initialChannelSlug]);
 
   // Stage the reveal of a channel's own messages one at a time, honoring
   // each message's optional `delay` (ms since the previous message
@@ -497,7 +513,7 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
                   // at a time, but it keeps ids self-documenting.
                   id: `channel-${activeServerSlug ?? "home"}-${slugifyChannelText(channel.text)}`,
                   channelLink: () => {
-                    setActiveChannel(channel);
+                    setSelectedChannelSlug(slugifyChannelText(channel.text));
                     onSelectChannel(slugifyChannelText(channel.text));
                   },
                 }))}

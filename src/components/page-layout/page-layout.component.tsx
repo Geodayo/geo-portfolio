@@ -165,6 +165,10 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
     findChannelBySlug(channels, selection) ??
     findInitialChannel(channels, initialChannelSlug);
 
+  // Identifies the channel being looked at right now. Everything below that's
+  // scoped to a single channel resets when this changes.
+  const channelKey = `${activeServerSlug ?? "home"}::${activeChannel?.text ?? ""}`;
+
   const [sentMessages, setSentMessages] = useState<Record<string, MessageProps[]>>({});
   const [pendingReplies, setPendingReplies] = useState<Record<string, boolean>>({});
   const [activeProfile, setActiveProfile] = useState<{ id: string; rect: DOMRect } | null>(null);
@@ -179,30 +183,47 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
       (activeChannel?.messages?.length ?? 0)
   );
   const [pointerDismissed, setPointerDismissed] = useState(false);
+  // See the effect further down for what a cue is and how `sourceIndex` and
+  // `key` are used; it's declared up here so the reset below can clear it.
+  const [pointerCue, setPointerCue] = useState<{
+    targetId: string;
+    sourceIndex: number;
+    key: number;
+  } | null>(null);
+  const pointerCueCounter = useRef(0);
+
+  // Per-channel state resets here, during render, rather than from an effect.
+  // An effect only runs after the browser has already painted a frame — a
+  // frame still carrying the previous channel's reveal count and pointer
+  // arrow. That paint is the blank-and-flash this component kept getting
+  // patched for. React throws this render pass away and immediately re-runs
+  // the component with the new values, so nothing stale reaches the screen.
+  const [seenChannelKey, setSeenChannelKey] = useState(channelKey);
+  if (seenChannelKey !== channelKey) {
+    setSeenChannelKey(channelKey);
+    setRevealedCount(immediateRevealCount(activeChannel));
+    setIsStagingMessages(
+      immediateRevealCount(activeChannel) <
+        (activeChannel?.messages?.length ?? 0)
+    );
+    // Otherwise a stale arrow keeps pointing at something in the old channel.
+    setPointerCue(null);
+    setPointerDismissed(false);
+  }
 
   // Stage the reveal of a channel's own messages one at a time, honoring
   // each message's optional `delay` (ms since the previous message
   // appeared). Messages without a delay reveal right away, so channels that
   // don't opt in behave exactly as before (everything shows up at once).
   //
-  // "Right away" has to mean *this* render, not setTimeout(fn, 0). A zero
-  // delay scheduled through a timer is a macrotask, so it lands after the
-  // browser has already painted a frame with nothing revealed — the message
-  // list visibly blanks and comes back. So reveal the leading run of
-  // no-delay messages synchronously and only put the rest on timers.
+  // Only the *delayed* messages are this effect's business. The leading run
+  // with no delay is already counted by useState's seed on first render and
+  // by the reset above on every channel change — both of which happen before
+  // a paint, which a timer or an effect cannot. So there's nothing to set
+  // synchronously here: revealedCount is never momentarily wrong.
   useEffect(() => {
     const channelMessages = activeChannel?.messages ?? [];
-
-    if (channelMessages.length === 0) {
-      setRevealedCount(0);
-      setIsStagingMessages(false);
-      return;
-    }
-
     const immediateCount = immediateRevealCount(activeChannel);
-
-    setRevealedCount(immediateCount);
-    setIsStagingMessages(immediateCount < channelMessages.length);
 
     if (immediateCount >= channelMessages.length) return;
 
@@ -244,7 +265,6 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
     ? "Front Page"
     : servers.find((server) => server.slug === activeServerSlug)?.name ?? "";
 
-  const channelKey = `${activeServerSlug ?? "home"}::${activeChannel?.text ?? ""}`;
   const channelMessages = activeChannel?.messages ?? [];
   const displayedMessages = [
     ...channelMessages.slice(0, revealedCount),
@@ -262,13 +282,8 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
   // index stays valid even after later messages arrive. `key` is a separate
   // incrementing counter (not just the target id) so the un-dismiss/retimer
   // effect below still fires even if the same target gets pointed at twice
-  // in a row.
-  const [pointerCue, setPointerCue] = useState<{
-    targetId: string;
-    sourceIndex: number;
-    key: number;
-  } | null>(null);
-  const pointerCueCounter = useRef(0);
+  // in a row. (The state itself is declared up top, with the other
+  // per-channel state it gets reset alongside.)
   const POINTER_SOURCE_ID = "pointer-source-avatar";
 
   useEffect(() => {
@@ -285,13 +300,6 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelKey, displayedMessages.length]);
-
-  // Clear the pointer entirely when switching channels/servers, rather than
-  // leaving a stale arrow pointing at something from the previous channel.
-  useEffect(() => {
-    setPointerCue(null);
-    setPointerDismissed(false);
-  }, [activeChannel]);
 
   const pointerTargetPoint = usePointerTarget(
     containerRef,

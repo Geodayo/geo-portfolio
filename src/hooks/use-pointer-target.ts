@@ -28,27 +28,35 @@ export function usePointerTarget(
   targetId: string | null,
   remeasureKey?: string | number
 ): PointerTargetPoint | null {
-  const [point, setPoint] = useState<PointerTargetPoint | null>(null);
+  // The measurement is stored with the target it was taken against, not on
+  // its own. Measuring can only happen in an effect — after a paint — so a
+  // bare point would still describe the *previous* target for one frame
+  // whenever targetId changes, and the arrow would visibly jump from the old
+  // position to the new one. Tagging it lets the return below simply ignore a
+  // measurement that no longer matches what's being asked for.
+  const [measurement, setMeasurement] = useState<{
+    targetId: string;
+    key: string | number | undefined;
+    point: PointerTargetPoint;
+  } | null>(null);
 
   useEffect(() => {
-    if (!targetId) {
-      setPoint(null);
-      return;
-    }
+    if (!targetId) return;
 
     const measure = () => {
       const containerEl = containerRef.current;
       const targetEl = document.getElementById(targetId);
-      if (!containerEl || !targetEl) {
-        setPoint(null);
-        return;
-      }
+      if (!containerEl || !targetEl) return;
 
       const containerBox = containerEl.getBoundingClientRect();
       const targetBox = targetEl.getBoundingClientRect();
-      setPoint({
-        x: targetBox.left - containerBox.left + targetBox.width / 2,
-        y: targetBox.top - containerBox.top + targetBox.height / 2,
+      setMeasurement({
+        targetId,
+        key: remeasureKey,
+        point: {
+          x: targetBox.left - containerBox.left + targetBox.width / 2,
+          y: targetBox.top - containerBox.top + targetBox.height / 2,
+        },
       });
     };
 
@@ -64,5 +72,7 @@ export function usePointerTarget(
     };
   }, [containerRef, targetId, remeasureKey]);
 
-  return point;
+  return measurement?.targetId === targetId && measurement?.key === remeasureKey
+    ? measurement.point
+    : null;
 }

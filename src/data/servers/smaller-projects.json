@@ -1,0 +1,92 @@
+{
+  "channels": [
+    {
+      "text": "general",
+      "active": true,
+      "messages": [
+        {
+          "headless": false,
+          "date": "Oct 02, 2023",
+          "messageText": [
+            "This one's a catch-all server. Not every project is a year-long thing with a whole team behind it, some of them are a few months, one client, one very specific problem to solve.",
+            "So instead of giving each of those their own server, they each get a channel in here.",
+            "Pick a channel to read about one."
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Vincent Di Fate Store",
+      "active": false,
+      "messages": [
+        {
+          "headless": false,
+          "date": "Oct 09, 2023",
+          "messageText": [
+            "Vincent Di Fate is a sci-fi and aerospace illustrator, he's been painting book covers and NASA art for decades. He already had a portfolio site up for his artwork, and he wanted to start actually selling prints from it.",
+            "So the ask was a store. We went with Shopify for it, mainly because he needed the checkout, inventory and orders to just work without me building a whole backend for it.",
+            "Store's live here: https://shop.vincentdifate.com/collections/all"
+          ]
+        },
+        {
+          "headless": false,
+          "date": "Oct 09, 2023",
+          "messageText": [
+            "The catch with Shopify is that the theme layer is Liquid, which is server-rendered templating. You can't just drop a React component into it.",
+            "So I built the whole UI as Web Components with Lit instead. Custom elements are just HTML at the end of the day, so a Liquid template can render <vdf-shop-card> and the browser knows what to do with it. No framework needed on the theme side."
+          ]
+        },
+        {
+          "headless": false,
+          "date": "Oct 23, 2023",
+          "messageText": [
+            "Every component got built in Storybook first, before it ever touched the store.",            
+            "That was the whole workflow: build it in isolation, get the states right, then go integrate it. Way less painful than debugging styling inside a live Shopify theme."
+          ]
+        },
+        {
+          "headless": false,
+          "date": "Oct 23, 2023",
+          "messageText": [
+            "Some of the components from the library:"
+          ]
+        },
+        {
+          "headless": true,
+          "date": "Oct 23, 2023",
+          "type": "gallery",
+          "gallery": [
+            "https://placecats.com/600/400",
+            "https://placecats.com/600/450",
+            "https://placecats.com/600/380",
+            "https://placecats.com/600/500",
+            "https://placecats.com/600/420",
+            "https://placecats.com/600/460"
+          ]
+        },        
+        {
+          "headless": false,
+          "date": "Dec 04, 2023",
+          "messageText": [
+            "On the build side: Vite bundles all the components into a single web-components.bundle.js, and there's a Make target that builds it and drops it plus the global CSS straight into the theme's assets folder. The theme.liquid just loads it with a defer tag.",
+            "make dev-serve-storybook for component work, make dev-serve-shopify to run the theme against a dev store. Two commands, that's the whole dev setup.",
+            "Started from Shopify's Dawn theme and forked it into a custom vincent-theme, overriding the sections I needed (product, collection grid, search, cart, header, footer) and leaving the rest of Dawn's plumbing alone."
+          ]
+        },
+        {
+          "headless": false,
+          "date": "Dec 15, 2023",
+          "messageText": [
+            "Wrapped it up in December. The search results page reuses the same grid and filters as the collection page, cart got styled to match, and everything's responsive down to mobile.",
+            "Skill sheet for this one:",
+            "✅ Web Components  ✅ Lit  ✅ TypeScript  ✅ Storybook  ✅ Vite",
+            "✅ Shopify  ✅ Liquid  ✅ Shadow DOM  ✅ CSS Custom Properties",
+            "✅ Agile Methodologies  ✅ Project Management  ✅ Communication",
+            "Go poke at it: https://shop.vincentdifate.com/collections/all"
+          ]
+        }
+      ]
+    }
+  ],
+  "users": {}
+}

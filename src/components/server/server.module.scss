@@ -52,6 +52,11 @@
 // .name {
 //   display: none;
 // }
+.thumbnail.transparent {
+  background-color: transparent;
+  background-size: contain;
+}
+
 .name {
   display: none;
   position: absolute;

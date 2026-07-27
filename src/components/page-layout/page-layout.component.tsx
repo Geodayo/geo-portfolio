@@ -471,7 +471,8 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
           <div className={styles.serversWrapper} id="front-page">
             <Server
               name={"Front Page"}
-              thumbnail={"/discord-temp-icon.jpg"}
+              thumbnail={"/images/front-page-logo.svg"}
+              transparent
               active={isHome}
               serverLink={() => onSelectServer(null)}
             ></Server>

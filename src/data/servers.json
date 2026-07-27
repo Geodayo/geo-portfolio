@@ -16,5 +16,11 @@
     "name": "My Language App",
     "thumbnail": "/images/my-language-app-logo.png",
     "aliases": ["MLA", "the language app"]
+  },
+  {
+    "slug": "smaller-projects",
+    "name": "Smaller Projects",
+    "thumbnail": "/images/smaller-projects-logo.svg",
+    "aliases": ["Vincent Di Fate Store", "Vincent Di Fate", "VDF"]
   }
 ]

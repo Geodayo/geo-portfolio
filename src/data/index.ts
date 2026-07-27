@@ -17,6 +17,7 @@ import users from "./users.json";
 import cyndaMediaLab from "./servers/cynda-media-lab.json";
 import fabricVentures from "./servers/fabric-ventures.json";
 import myLanguageApp from "./servers/my-language-app.json";
+import smallerProjects from "./servers/smaller-projects.json";
 
 export { about, frontPage, servers, users };
 
@@ -29,4 +30,5 @@ export const serverDetails: Record<string, unknown> = {
   "cynda-media-lab": cyndaMediaLab,
   "fabric-ventures": fabricVentures,
   "my-language-app": myLanguageApp,
+  "smaller-projects": smallerProjects,
 };

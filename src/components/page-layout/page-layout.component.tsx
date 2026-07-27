@@ -340,12 +340,13 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
       }
     : null;
 
-  // Auto-dismiss the pointer arrow 10s after it appears, so it doesn't just
+  // Auto-dismiss the pointer arrow 15s after it appears, so it doesn't just
   // sit there indefinitely. Keyed on pointerCue so a fresh cue (new target,
   // or even the same target pointed at again) always restarts the clock.
+  const POINTER_DISMISS_MS = 15000;
   useEffect(() => {
     if (!pointerCue) return;
-    const timeout = setTimeout(() => setPointerDismissed(true), 10000);
+    const timeout = setTimeout(() => setPointerDismissed(true), POINTER_DISMISS_MS);
     return () => clearTimeout(timeout);
   }, [pointerCue]);
 

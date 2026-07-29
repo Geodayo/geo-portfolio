@@ -87,6 +87,71 @@
           ]
         }
       ]
+    },
+    {
+      "text": "Yonder Media",
+      "active": false,
+      "messages": [
+        {
+          "headless": false,
+          "date": "Aug 05, 2019",
+          "messageText": [
+            "Yonder Media Mobile is a mobile/media company out of New York. This one was a promo page, a single landing page that needed to be up for a couple of months and then go away.",
+            "Freelance gig, and it was basically all mine: the front-end, the CMS behind it, and the Docker setup it ran on. One page, but the ask was make it look expensive."
+          ]
+        },
+        {
+          "headless": true,
+          "date": "Aug 05, 2019",
+          "type": "video",
+          "video": "https://www.youtube.com/watch?v=ZdcKHA0TaCo"
+        },
+        {
+          "headless": false,
+          "date": "Aug 05, 2019",
+          "messageText": [
+            "Above you can see the page itself and the Craft side as well."
+          ]
+        },
+        {
+          "headless": false,
+          "date": "Aug 14, 2019",
+          "messageText": [
+            "Craft CMS was the pick, mostly because the whole point was that they could change the copy without calling me every time.",
+            "I set up two sections in Craft: mainContent for the blocks in the body, footerContent for the footer links. The Twig template just loops over the entries and renders whatever's there, so adding a block to the page was them clicking 'new entry', not me redeploying."
+          ]
+        },
+        {
+          "headless": false,
+          "date": "Sep 10, 2019",
+          "messageText": [
+            "Front-end is hand-written Twig, CSS and vanilla JS. No framework, no build step. For a page this size that was the right call.",
+            "The motion is three things stacked: ScrollOut for the scroll-triggered reveals, Rellax for the parallax on the big vertical logotype, and plain CSS keyframes for the panels sliding up on load with staggered durations so they don't all land at once. The animated logo on the phone screen is a Lottie player.",
+            "Favorite piece of it is the footer, ScrollOut writes a --visible-y custom property on the element as it scrolls into view, and the transform is a calc() off that variable. So the slide is tied to where you actually are on the page instead of just firing once."
+          ]
+        },
+        {
+          "headless": false,
+          "date": "Sep 24, 2019",
+          "messageText": [
+            "The whole thing runs in Docker. Locally it's docker-compose: nginx and php-fpm off the official Craft images, Postgres, Redis, and a separate console container running php craft queue/listen so the queue isn't fighting the web process.",
+            "Production was a Docker Swarm stack against MySQL. Build the image, docker stack deploy, done, and pushing an update was a single docker service update --force."
+          ]
+        },
+        {
+          "headless": false,
+          "date": "Oct 04, 2019",
+          "messageText": [
+            "Since this project was mostly about typing things into fields and watching them come out the other side, here's the skill sheet as one more Craft entry:",
+            "✅ Craft CMS  ✅ Twig  ✅ PHP  ✅ Content Modeling",
+            "✅ HTML5  ✅ CSS3  ✅ Vanilla JavaScript  ✅ CSS Animations",
+            "✅ Art-Directed Responsive Images  ✅ Retina Assets  ✅ Mobile-First CSS",
+            "✅ ScrollOut  ✅ Rellax  ✅ Lottie",
+            "✅ Docker  ✅ Docker Swarm  ✅ Nginx  ✅ MySQL  ✅ PostgreSQL  ✅ Redis",
+            "✅ Agile Methodologies  ✅ Project Management  ✅ Communication"
+          ]
+        }
+      ]
     }
   ],
   "users": {}

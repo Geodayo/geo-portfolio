@@ -1,9 +1,13 @@
 import styles from "./video.module.scss";
-import { VIDEO_ASSET } from "../../lib/assets";
+import { VIDEO_ASSET, getVideoMeta } from "../../lib/assets";
 
 export interface VideoProps {
+  /** A YouTube/Vimeo watch URL, or a path to a file in public/ ("/videos/foo.mp4"). */
   url: string;
 }
+
+/** Anything rooted at "/" is served out of public/ rather than embedded. */
+const isSelfHosted = (url: string): boolean => url.startsWith("/");
 
 type VideoPlatform = "youtube" | "vimeo" | null;
 
@@ -61,6 +65,32 @@ const getVideoInfo = (url: string): { platform: VideoPlatform; videoId: string |
 };
 
 export const Video = ({ url }: VideoProps) => {
+  // Self-hosted clips play in a native <video> — no embed to build, and the
+  // real dimensions come out of assets.json so the box is the file's own
+  // shape instead of a letterboxed 16:9.
+  if (isSelfHosted(url)) {
+    const meta = getVideoMeta(url) ?? VIDEO_ASSET;
+
+    return (
+      <div className={styles.container}>
+        <div
+          className={styles.videoWrapper}
+          style={{ aspectRatio: meta.aspectRatio }}
+        >
+          <video
+            className={styles.video}
+            src={url}
+            width={meta.width}
+            height={meta.height}
+            controls
+            playsInline
+            preload="metadata"
+          />
+        </div>
+      </div>
+    );
+  }
+
   const { platform, videoId } = getVideoInfo(url);
 
   if (!platform || !videoId) {

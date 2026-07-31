@@ -12,13 +12,25 @@ export interface AssetMeta {
 }
 
 const images: Record<string, AssetMeta> = assets.images;
+const videos: Record<string, AssetMeta> = assets.videos;
 
 /**
- * Every video on the site is a YouTube or Vimeo embed, so there's no file to
- * measure — they're all 16:9 and the player stretches to fill whatever box it
- * is given.
+ * Fallback shape for YouTube/Vimeo embeds: there's no file to measure, they're
+ * all 16:9, and the player stretches to fill whatever box it is given. Videos
+ * served out of public/ are measured — see getVideoMeta.
  */
 export const VIDEO_ASSET: AssetMeta = assets.defaults.video;
+
+/**
+ * Looks up a self-hosted video by its public path ("/videos/foo.mp4").
+ * Returns undefined for embeds (a YouTube/Vimeo URL) and for files added since
+ * the last `npm run assets` run — callers fall back to VIDEO_ASSET's 16:9.
+ */
+export const getVideoMeta = (src: string | undefined): AssetMeta | undefined => {
+  if (!src) return undefined;
+  const path = src.split(/[?#]/)[0];
+  return videos[path] ?? videos[decodeURIComponent(path)];
+};
 
 /**
  * Looks up an image by the path the app references it with ("/images/foo.png").

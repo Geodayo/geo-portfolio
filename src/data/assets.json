@@ -352,5 +352,17 @@
       "height": 960,
       "aspectRatio": 1.0417
     }
+  },
+  "videos": {
+    "/videos/vh-interactive-model.mp4": {
+      "width": 1680,
+      "height": 1110,
+      "aspectRatio": 1.5135
+    },
+    "/videos/vh-timeline-gallery.mp4": {
+      "width": 1962,
+      "height": 1080,
+      "aspectRatio": 1.8167
+    }
   }
 }

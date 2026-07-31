@@ -8,8 +8,9 @@
   }
 }
 
-// The 16:9 ratio itself is set inline from assets.json rather than hardcoded
-// here, so this box holds the player's exact shape open while it loads.
+// The ratio itself is set inline from assets.json rather than hardcoded here
+// — 16:9 for embeds, the file's own shape for self-hosted clips — so this box
+// holds the player's exact shape open while it loads.
 .videoWrapper {
   position: relative;
   width: 100%;

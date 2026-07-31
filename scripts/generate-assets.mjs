@@ -1,8 +1,8 @@
 // Regenerates src/data/assets.json — the intrinsic width/height/aspect ratio
-// of every image under public/, keyed by the public URL the app references it
-// by ("/images/foo.png"). The skeleton loaders read this to reserve the exact
-// box a picture will occupy before it has downloaded, so nothing shifts when
-// it lands.
+// of every image and self-hosted video under public/, keyed by the public URL
+// the app references it by ("/images/foo.png", "/videos/bar.mp4"). The
+// skeleton loaders read this to reserve the exact box a picture will occupy
+// before it has downloaded, so nothing shifts when it lands.
 //
 // Run it after adding or replacing anything in public/:
 //   npm run assets
@@ -18,8 +18,9 @@ const projectRoot = join(scriptDir, "..");
 const publicDir = join(projectRoot, "public");
 const outFile = join(projectRoot, "src", "data", "assets.json");
 
-// Every video is an embed (YouTube/Vimeo), so there's no file to measure —
-// they're all 16:9 and the player fills whatever box we give it.
+// Fallback for YouTube/Vimeo embeds: there's no file to measure, they're all
+// 16:9, and the player fills whatever box we give it. Videos hosted in
+// public/ ARE measured, and get their own entry below.
 const VIDEO_DEFAULT = { width: 1920, height: 1080 };
 
 const IMAGE_EXTENSIONS = new Set([
@@ -32,6 +33,8 @@ const IMAGE_EXTENSIONS = new Set([
   ".svg",
   ".avif",
 ]);
+
+const VIDEO_EXTENSIONS = new Set([".mp4", ".webm", ".mov"]);
 
 /** PNG: IHDR is always the first chunk, width/height are big-endian at 16/20. */
 function pngSize(buf) {
@@ -139,6 +142,66 @@ function svgSize(buf) {
   return null;
 }
 
+/**
+ * MP4/MOV (and the ISO-BMFF part of WebM's cousins): every video track has a
+ * `tkhd` box whose last two fields are the track's display width and height
+ * as 16.16 fixed-point numbers. Scanning for the tag rather than walking the
+ * box tree is enough here — audio tracks report 0x0, so taking the largest
+ * non-empty one lands on the video track.
+ */
+function mp4Size(buf) {
+  let best = null;
+
+  for (let offset = 0; offset < buf.length - 4; offset++) {
+    if (buf.toString("ascii", offset, offset + 4) !== "tkhd") continue;
+
+    // version/flags (4), then the v0/v1 timing fields, reserved (8),
+    // layer + alternate_group (4), volume + reserved (4), matrix (36).
+    const version = buf[offset + 4];
+    const sizeAt = offset + 4 + 4 + (version === 1 ? 32 : 20) + 8 + 4 + 4 + 36;
+    if (sizeAt + 8 > buf.length) continue;
+
+    const width = buf.readUInt32BE(sizeAt) / 65536;
+    const height = buf.readUInt32BE(sizeAt + 4) / 65536;
+    if (width > 0 && height > 0 && (!best || width * height > best.width * best.height)) {
+      best = { width: Math.round(width), height: Math.round(height) };
+    }
+  }
+
+  return best;
+}
+
+/** WebM/Matroska: PixelWidth (0xB0) and PixelHeight (0xBA) elements. */
+function webmSize(buf) {
+  const readVint = (at) => {
+    const length = buf[at];
+    if (!length) return null;
+    let bytes = 1;
+    while (bytes <= 8 && !(length & (0x80 >> (bytes - 1)))) bytes++;
+    let value = length & (0xff >> bytes);
+    for (let i = 1; i < bytes; i++) value = value * 256 + buf[at + i];
+    return { value, next: at + bytes };
+  };
+
+  let width = null;
+  let height = null;
+  for (let offset = 0; offset < buf.length - 2; offset++) {
+    const tag = buf[offset];
+    if (tag !== 0xb0 && tag !== 0xba) continue;
+    const size = readVint(offset + 1);
+    if (!size || size.value < 1 || size.value > 4) continue;
+
+    let value = 0;
+    for (let i = 0; i < size.value; i++) value = value * 256 + buf[size.next + i];
+    if (!value) continue;
+    if (tag === 0xb0 && width === null) width = value;
+    if (tag === 0xba && height === null) height = value;
+    if (width && height) break;
+  }
+
+  return width && height ? { width, height } : null;
+}
+
 function readSize(buf, ext) {
   switch (ext) {
     case ".png":
@@ -153,6 +216,11 @@ function readSize(buf, ext) {
       return webpSize(buf);
     case ".svg":
       return svgSize(buf);
+    case ".mp4":
+    case ".mov":
+      return mp4Size(buf);
+    case ".webm":
+      return webmSize(buf);
     default:
       // .avif and friends: no parser here, so they're reported as skipped
       // rather than silently written with bogus numbers.
@@ -175,13 +243,23 @@ function toAspectRatio(width, height) {
   return Math.round((width / height) * 10000) / 10000;
 }
 
+function sortByKey(entries) {
+  return Object.fromEntries(
+    Object.keys(entries)
+      .sort()
+      .map((key) => [key, entries[key]])
+  );
+}
+
 async function main() {
   const images = {};
+  const videos = {};
   const skipped = [];
 
   for await (const path of walk(publicDir)) {
     const ext = extname(path).toLowerCase();
-    if (!IMAGE_EXTENSIONS.has(ext)) continue;
+    const isVideo = VIDEO_EXTENSIONS.has(ext);
+    if (!isVideo && !IMAGE_EXTENSIONS.has(ext)) continue;
 
     const url = `/${relative(publicDir, path).split(/[\\/]/).join("/")}`;
     const size = readSize(await readFile(path), ext);
@@ -191,18 +269,16 @@ async function main() {
       continue;
     }
 
-    images[url] = {
+    const target = isVideo ? videos : images;
+    target[url] = {
       width: size.width,
       height: size.height,
       aspectRatio: toAspectRatio(size.width, size.height),
     };
   }
 
-  const sorted = Object.fromEntries(
-    Object.keys(images)
-      .sort()
-      .map((key) => [key, images[key]])
-  );
+  const sortedImages = sortByKey(images);
+  const sortedVideos = sortByKey(videos);
 
   const output = {
     defaults: {
@@ -211,13 +287,16 @@ async function main() {
         aspectRatio: toAspectRatio(VIDEO_DEFAULT.width, VIDEO_DEFAULT.height),
       },
     },
-    images: sorted,
+    images: sortedImages,
+    videos: sortedVideos,
   };
 
   await writeFile(outFile, `${JSON.stringify(output, null, 2)}\n`, "utf8");
 
   console.log(
-    `Wrote ${Object.keys(sorted).length} entries to ${relative(projectRoot, outFile)}`
+    `Wrote ${Object.keys(sortedImages).length} image and ` +
+      `${Object.keys(sortedVideos).length} video entries to ` +
+      `${relative(projectRoot, outFile)}`
   );
   if (skipped.length > 0) {
     console.warn(`Could not read dimensions for:\n  ${skipped.join("\n  ")}`);

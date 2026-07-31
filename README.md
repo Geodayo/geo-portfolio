@@ -33,8 +33,11 @@ After adding, replacing or deleting anything in `public/`, regenerate it:
 npm run assets
 ```
 
-Video embeds (YouTube, Vimeo) have no file to measure — they're all 16:9, which
-lives in the `defaults.video` entry of the same file.
+A message's `video` can be either a YouTube/Vimeo URL or a path to a file in
+`public/` (`/videos/foo.mp4`). Embeds have no file to measure — they're all
+16:9, which lives in the `defaults.video` entry. Self-hosted `.mp4`/`.webm`/
+`.mov` files are measured like images and land under `videos`, so they render
+in a native `<video>` at their own aspect ratio instead of a letterboxed 16:9.
 
 ## Learn More
 

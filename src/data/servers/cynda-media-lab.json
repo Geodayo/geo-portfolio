@@ -237,6 +237,74 @@
           ]
         }
       ]
+    },
+    {
+      "text": "Vibrant Health",
+      "active": false,
+      "messages": [
+        {
+          "headless": false,
+          "date": "Jan 12, 2026",
+          "messageText": [
+            "Vibrant Health is a supplement brand, they've been around since 1992 and Green Vibrance is their big product.",
+            "They were relaunching it with a new look and wanted a microsite to promote it.",
+            "We built it as a standalone web component library first, Lit + TypeScript + Vite, developed in Storybook, then compiled down and dropped into their Shopify theme as Liquid sections. That way the components never had to know they were living inside Shopify.",
+            "There were two pieces I owned end to end: the interactive 3D model and the timeline gallery. Those are the ones worth talking about."
+          ]
+        },
+        {
+          "headless": false,
+          "date": "Feb 09, 2026",
+          "messageText": [
+            "The interactive model is a real 3D bottle. It's a GLTF model rendered with Three.js inside a Lit component, and as you scroll the page it rotates to a new face, each one calling out a different claim on the label: full disclosure labeling, no proprietary blends, non-GMO, clinically formulated, and so on.",
+            "Scroll position drives everything."
+          ]
+        },
+        {
+          "headless": true,
+          "date": "Feb 09, 2026",
+          "type": "video",
+          "video": "/videos/vh-interactive-model.mp4"
+        },
+        {
+          "headless": false,
+          "date": "Mar 05, 2026",
+          "messageText": [
+            "The timeline gallery is the brand's history, 1992 to 2026, five moments. Simpler idea, but the layout was the fun part.",
+            "Each era is a 2x2 quadrant grid, and every image is positioned by percentage offsets from its own quadrant's corner, and it's allowed to overflow. That was deliberate: the design had photos spilling past their boxes and overlapping, and the only way to keep that art direction intact across screen sizes without hardcoding pixel positions was to make the quadrant the coordinate system and let the images break out of it.",
+            "The year and description live in a sticky box that stays put while the eras scroll past it. Two IntersectionObservers do the work, one adds an in-view class once per section to trigger the entrance, the other tracks intersection ratios for every section and picks the highest as the active one, so the sticky box's content swaps to whichever era is most on screen."
+          ]
+        },
+        {
+          "headless": true,
+          "date": "Mar 05, 2026",
+          "type": "video",
+          "video": "/videos/vh-timeline-gallery.mp4"
+        },
+        {
+          "headless": false,
+          "date": "Mar 23, 2026",
+          "messageText": [
+            "Once the component library was compiled, I helped get it into the actual Shopify theme.",
+            "Every component became a Liquid section with a {% schema %} block so it shows up in the theme editor under a 'Microsite' category and the client can drop it onto a page themselves. The content gets passed in as JSON attributes built with {% capture %}, with Shopify's asset_url filter resolving every image and the GLTF model to a real CDN path.",
+            "It's a nice pattern, honestly. Content lives in Liquid where the merchant can reach it, behavior lives in the web component, and the two only talk through attributes. The components have no idea they're inside Shopify."
+          ]
+        },
+        {
+          "headless": false,
+          "date": "Jun 16, 2026",
+          "messageText": [
+            "Wrapped in June. This one had the widest range of anything I've worked on, 3D math on one end and a Liquid schema block on the other.",
+            "Skill sheet:",
+            "✅ Three.js  ✅ WebGL  ✅ Storybook  ✅ Lit",
+            "✅ Web Components✅ TypeScript  ✅ SCSS",
+            "✅ SVG Path Animation  ✅ CSS Animations",
+            "✅ Shopify  ✅ Liquid  ✅ Theme Sections & Schemas",
+            "✅ Responsive Design  ✅ Performance & Memory Management  ✅ Technical Documentation",
+            "✅ Agile Methodologies  ✅ Communication"
+          ]
+        }
+      ]
     }
   ],
   "users": {}

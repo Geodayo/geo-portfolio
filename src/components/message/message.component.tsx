@@ -2,6 +2,9 @@ import cx from "clsx";
 import styles from "./message.module.scss";
 import { Gallery } from "../gallery/gallery.component";
 import { Video } from "../video/video.component";
+import { Directory, type DirectoryEntry } from "../directory/directory.component";
+import { ContactCard, type ContactEntry } from "../contact-card/contact-card.component";
+import { ContactForm } from "../contact-form/contact-form.component";
 import { getImageMeta } from "../../lib/assets";
 import { useImageLoaded } from "../../hooks/use-image-loaded";
 
@@ -12,10 +15,16 @@ export interface MessageProps {
   profileName?: string;
   userId?: string;
   onProfileClick?: (userId: string, rect: DOMRect) => void;
-  type?: "text" | "image" | "gallery" | "video";
+  type?: "text" | "image" | "gallery" | "video" | "directory" | "contact" | "contactForm";
   image?: string;
   gallery?: string[];
   video?: string;
+  /** Project shortcut cards (see the Directory component) — each entry
+   * references a server from servers.json by slug. */
+  directory?: DirectoryEntry[];
+  /** Contact method cards (see the ContactCard component) — mailto/profile
+   * links rendered as buttons instead of bare URLs in the text. */
+  contact?: ContactEntry[];
   messageText?: string[];
   /**
    * Milliseconds to wait after the previous message reveals before this one
@@ -55,6 +64,8 @@ export const Message = ({
   image,
   gallery,
   video,
+  directory,
+  contact,
   messageText,
   avatarId,
 }: MessageProps) => {
@@ -134,6 +145,9 @@ export const Message = ({
             )}
             {type === "gallery" && gallery && <Gallery images={gallery} />}
             {type === "video" && video && <Video url={video} />}
+            {type === "directory" && directory && <Directory entries={directory} />}
+            {type === "contact" && contact && <ContactCard entries={contact} />}
+            {type === "contactForm" && <ContactForm />}
           </div>
         </div>
       </div>

@@ -93,6 +93,12 @@
   flex-direction: column;
   flex-wrap: nowrap;
   z-index: 20;
+  // Fill the row instead of shrinking to fit the content. Text renders the
+  // same either way, but children sized in percentages (e.g. the contact
+  // form's 50% width) need the definite full-column width to resolve
+  // against — without this they collapse to half their own content size.
+  flex: 1;
+  min-width: 0;
 }
 
 .link {

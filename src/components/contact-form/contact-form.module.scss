@@ -1,0 +1,143 @@
+.container {
+  margin-top: 4px;
+  width: 50%;
+  // 50% of a narrow phone screen is unusable — let the form take the full
+  // message column back once half of it drops below a comfortable size.
+  min-width: min(320px, 100%);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 8px;
+  background-color: color-mix(in oklab, hsl(225 calc(1 * 4%) 15% / 1) 100%, black 0%);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+// Discord-style form labels: small, bold, uppercase, muted.
+.label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, hsl(220 calc(1 * 4%) 63% / 1) 100%, black 0%);
+}
+
+.input,
+.textarea {
+  box-sizing: border-box;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 15px;
+  font-family: inherit;
+  line-height: 1.375rem;
+  background-color: #1e1f22;
+  color: oklab(0.899401 -0.00192499 -0.00481987);
+
+  &::placeholder {
+    color: color-mix(in oklab, hsl(225 calc(1 * 3%) 46% / 1) 100%, black 0%);
+    opacity: 0.8;
+  }
+
+  &:focus {
+    outline: 2px solid #5865f2;
+    outline-offset: -2px;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+
+// The bot trap — parked far off-canvas rather than display:none so
+// naive bots still consider it a fillable field.
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.error {
+  color: #f46262;
+  font-size: 14px;
+  line-height: 1.25rem;
+}
+
+.submit {
+  align-self: flex-end;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  color: white;
+  background-color: #5865f2;
+  cursor: pointer;
+  transition: background-color .15s ease-out;
+
+  &:hover:not(:disabled) {
+    background-color: #4752c4;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.success {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  border-radius: 8px;
+  background-color: color-mix(in oklab, hsl(225 calc(1 * 4%) 15% / 1) 100%, black 0%);
+}
+
+.successTitle {
+  color: oklab(0.963963 -0.000228554 -0.00283051);
+  font-weight: 600;
+}
+
+.successText {
+  color: color-mix(in oklab, hsl(220 calc(1 * 4%) 63% / 1) 100%, black 0%);
+  font-size: 14px;
+  line-height: 1.25rem;
+}
+
+.sendAnother {
+  align-self: flex-start;
+  margin-top: 6px;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  color: white;
+  background-color: #5865f2;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #4752c4;
+  }
+}

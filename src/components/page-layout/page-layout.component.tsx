@@ -12,6 +12,7 @@ import { UsersList, type UsersListProps } from "../users-list/users-list.compone
 import { UserProfile, type UserProfileProps } from "../user-profile/user-profile.component";
 import { sendChatMessage, type ChatHistoryMessage } from "../../services/chat-api";
 import { usePointerTarget } from "../../hooks/use-pointer-target";
+import { trackEvent } from "../../lib/analytics";
 import { slugifyChannelText } from "../../lib/slugify";
 import { users } from "../../data";
 import cx from "clsx";
@@ -88,6 +89,25 @@ export interface PageLayoutProps {
 const BOT_NAME = "GeoBot";
 const BOT_THUMBNAIL = "/bot-icon.svg";
 const ANONYMOUS_THUMBNAIL = "/anonymous-icon.svg";
+const CONTACT_CHANNEL_SLUG = "contact-me";
+const PENDING_CHANNEL_STORAGE_KEY = "geo-pending-channel";
+
+// One-shot read of the channel pick a previous PageLayout instance parked
+// before navigating (see openContactChannel): sessionStorage instead of
+// React state because switching between the Front Page and a server page
+// swaps route segments and remounts the whole component tree. Runs as the
+// selectedChannelSlug useState initializer — safe on the server (returns
+// null) and consumed on read so it can't re-trigger later.
+function consumePendingChannelSlug(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const slug = sessionStorage.getItem(PENDING_CHANNEL_STORAGE_KEY);
+    if (slug) sessionStorage.removeItem(PENDING_CHANNEL_STORAGE_KEY);
+    return slug;
+  } catch {
+    return null;
+  }
+}
 
 function findChannelBySlug(
   channels: ServerChannel[],
@@ -143,8 +163,15 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
   // back the moment the URL actually moves. On the Front Page there's no
   // channel route at all (see onSelectChannel in the container), so there this
   // is the only thing tracking the selection.
+  //
+  // Seeded from the sessionStorage handoff (see consumePendingChannelSlug):
+  // navigating between the Front Page and a server page swaps route segments,
+  // which remounts this whole component — so a "go to #contact-me on the
+  // Front Page" jump started on a server page can't pass the pick through
+  // React state. It parks the slug in sessionStorage instead, and the
+  // remounted instance picks it up right here.
   const [selectedChannelSlug, setSelectedChannelSlug] = useState<string | null>(
-    null
+    consumePendingChannelSlug
   );
 
   // Whatever the URL currently says, as one value. Any change to it — browser
@@ -264,6 +291,26 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
 
   const closeProfile = () => setActiveProfile(null);
 
+  // The profile popover's "get in touch" button: jump to the Front Page's
+  // #contact-me channel. From the Front Page that's just a channel switch;
+  // from a server page the pick is parked in sessionStorage for the
+  // remounted Front Page instance to consume (see selectedChannelSlug's
+  // initializer for why React state can't carry it across).
+  const openContactChannel = () => {
+    closeProfile();
+    if (isHome) {
+      setSelectedChannelSlug(CONTACT_CHANNEL_SLUG);
+    } else {
+      try {
+        sessionStorage.setItem(PENDING_CHANNEL_STORAGE_KEY, CONTACT_CHANNEL_SLUG);
+      } catch {
+        // Storage unavailable (private mode etc.) — still go home; the
+        // visitor just lands on #general instead of #contact-me.
+      }
+      onSelectServer(null);
+    }
+  };
+
   const activeServerName = isHome
     ? "Front Page"
     : servers.find((server) => server.slug === activeServerSlug)?.name ?? "";
@@ -358,6 +405,11 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
 
   const handleSendMessage = async (text: string) => {
     const key = channelKey;
+
+    trackEvent("geobot_message", {
+      server: activeServerName,
+      channel: activeChannel?.text ?? "",
+    });
 
     // Snapshot the conversation so far (before this new message) so it can
     // be forwarded to the assistant — the API itself has no memory between
@@ -492,7 +544,13 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
                   thumbnail={server.thumbnail}
                   iconOnly={server.iconOnly}
                   active={activeServerSlug === server.slug}
-                  serverLink={() => onSelectServer(server.slug)}
+                  serverLink={() => {
+                    trackEvent("project_open", {
+                      project: server.slug,
+                      source: "sidebar",
+                    });
+                    onSelectServer(server.slug);
+                  }}
                 ></Server>
               </div>
             );
@@ -616,6 +674,7 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
             <UserProfile
               {...profiles[activeProfile.id]}
               onClose={closeProfile}
+              onContactClick={openContactChannel}
             ></UserProfile>
           </div>
         </div>

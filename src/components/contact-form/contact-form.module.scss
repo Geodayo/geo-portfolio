@@ -1,6 +1,9 @@
 .container {
   margin-top: 4px;
-  max-width: 480px;
+  width: 50%;
+  // 50% of a narrow phone screen is unusable — let the form take the full
+  // message column back once half of it drops below a comfortable size.
+  min-width: min(320px, 100%);
 }
 
 .form {

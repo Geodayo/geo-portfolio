@@ -105,13 +105,8 @@
         {
           "headless": false,
           "messageText": [
-            "Want to get in touch? Drop me a message right here and it lands straight in my inbox.",
-            "Prefer LinkedIn or GitHub? Those are below the form."
+            "Want to get in touch? You can find me on LinkedIn and GitHub, or drop me a message with the form below and it lands straight in my inbox."
           ]
-        },
-        {
-          "headless": true,
-          "type": "contactForm"
         },
         {
           "headless": true,
@@ -130,6 +125,10 @@
               "href": "https://github.com/Geodayo"
             }
           ]
+        },
+        {
+          "headless": true,
+          "type": "contactForm"
         }
       ]
     }

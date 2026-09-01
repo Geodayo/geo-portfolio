@@ -25,6 +25,9 @@ export interface UserProfileProps {
   disableMessage?: boolean;
   onSendMessage?: (text: string) => void;
   onClose?: () => void;
+  /** Fired by the "get in touch" button in the banner (the add-friend icon).
+   * PageLayout uses it to jump to the Front Page's #contact-me channel. */
+  onContactClick?: () => void;
 }
 
 const BIO_PREVIEW_LENGTH = 120;
@@ -44,6 +47,7 @@ export const UserProfile = ({
   disableMessage = false,
   onSendMessage,
   onClose,
+  onContactClick,
 }: UserProfileProps) => {
   const [bioExpanded, setBioExpanded] = useState(false);
   const [messageValue, setMessageValue] = useState("");
@@ -74,7 +78,13 @@ export const UserProfile = ({
         }
       >
         <div className={styles.topActions}>
-          <button type="button" aria-label="Add friend" className={styles.iconButton}>
+          <button
+            type="button"
+            aria-label="Get in touch"
+            title="Get in touch"
+            className={styles.iconButton}
+            onClick={onContactClick}
+          >
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M14 8a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM2 20c0-3.31 3.13-6 7-6s7 2.69 7 6M18 8v6M15 11h6"

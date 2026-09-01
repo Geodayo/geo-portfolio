@@ -1,0 +1,106 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+  max-width: 640px;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: color-mix(in oklab, hsl(225 calc(1 * 4%) 15% / 1) 100%, black 0%);
+
+  &:hover {
+    background-color: color-mix(in oklab, hsl(225 calc(1 * 4%) 13% / 1) 100%, black 0%);
+
+    .name {
+      text-decoration: underline;
+    }
+  }
+}
+
+// The stretched link that makes the whole card clickable — sits over
+// everything except the channel chips (see their z-index below).
+.cardLink {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 8px;
+}
+
+.thumbnail {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-color: #f2f2f2;
+  flex-shrink: 0;
+}
+
+// Same idea as the sidebar's icon-only server tiles: the artwork is a bare
+// glyph on transparency, so the tile supplies its own grey backdrop instead
+// of the light placeholder fill.
+.thumbnail.iconOnly {
+  background-color: #313338;
+  background-size: contain;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.name {
+  color: oklab(0.963963 -0.000228554 -0.00283051);
+  font-weight: 600;
+  line-height: 1.375rem;
+}
+
+.description {
+  color: color-mix(in oklab, hsl(220 calc(1 * 4%) 63% / 1) 100%, black 0%);
+  font-size: 14px;
+  line-height: 1.25rem;
+}
+
+.channels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.chip {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background-color: #1e1f22;
+  color: color-mix(in oklab, hsl(220 calc(1 * 4%) 63% / 1) 100%, black 0%);
+  font-size: 13px;
+  line-height: 18px;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    color: color-mix(in oklab, hsl(220 calc(1 * 4%) 88% / 1) 100%, black 0%);
+    background-color: #2b2d31;
+  }
+}
+
+.hash {
+  color: #80848e;
+  font-weight: 600;
+}

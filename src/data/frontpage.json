@@ -54,6 +54,84 @@
           ]
         }
       ]
+    },
+    {
+      "text": "directory",
+      "active": false,
+      "messages": [
+        {
+          "headless": false,
+          "messageText": [
+            "Looking for something specific? This channel is the site map.",
+            "Every project on the site is listed below. Click a card to open that server, or jump straight into a specific project with the channel tags underneath."
+          ]
+        },
+        {
+          "headless": true,
+          "type": "directory",
+          "directory": [
+            {
+              "server": "cynda-media-lab",
+              "description": "The design studio I've been developing for since 2019 — branding, motion, and web work for clients like MIT and FIT.",
+              "channels": [
+                "MIT and FIT Learning Hub",
+                "Fabric Innovation Hub",
+                "Design Portfolio Center",
+                "Vibrant Health"
+              ]
+            },
+            {
+              "server": "fabric-ventures",
+              "description": "Migrated a VC firm's Next.js site to Webflow and built an AI-powered search agent embedded right into it."
+            },
+            {
+              "server": "my-language-app",
+              "description": "A freelance language-learning app built end to end — custom games to help a client's son practice speech.",
+              "channels": ["Components"]
+            },
+            {
+              "server": "smaller-projects",
+              "description": "Shorter gigs, each in its own channel: a Shopify store built with Lit web components, and a promo landing page.",
+              "channels": ["Vincent Di Fate Store", "Yonder Media"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "contact-me",
+      "active": false,
+      "messages": [
+        {
+          "headless": false,
+          "messageText": [
+            "Want to get in touch? Drop me a message right here and it lands straight in my inbox.",
+            "Prefer LinkedIn or GitHub? Those are below the form."
+          ]
+        },
+        {
+          "headless": true,
+          "type": "contactForm"
+        },
+        {
+          "headless": true,
+          "type": "contact",
+          "contact": [
+            {
+              "icon": "linkedin",
+              "label": "LinkedIn",
+              "value": "not-jorge-mendez",
+              "href": "https://www.linkedin.com/in/not-jorge-mendez/"
+            },
+            {
+              "icon": "github",
+              "label": "GitHub",
+              "value": "Geodayo",
+              "href": "https://github.com/Geodayo"
+            }
+          ]
+        }
+      ]
     }
   ],
   "users": {}

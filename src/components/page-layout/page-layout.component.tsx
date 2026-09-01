@@ -12,6 +12,7 @@ import { UsersList, type UsersListProps } from "../users-list/users-list.compone
 import { UserProfile, type UserProfileProps } from "../user-profile/user-profile.component";
 import { sendChatMessage, type ChatHistoryMessage } from "../../services/chat-api";
 import { usePointerTarget } from "../../hooks/use-pointer-target";
+import { trackEvent } from "../../lib/analytics";
 import { slugifyChannelText } from "../../lib/slugify";
 import { users } from "../../data";
 import cx from "clsx";
@@ -359,6 +360,11 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
   const handleSendMessage = async (text: string) => {
     const key = channelKey;
 
+    trackEvent("geobot_message", {
+      server: activeServerName,
+      channel: activeChannel?.text ?? "",
+    });
+
     // Snapshot the conversation so far (before this new message) so it can
     // be forwarded to the assistant — the API itself has no memory between
     // requests, so without this every message would look like the start of
@@ -492,7 +498,13 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
                   thumbnail={server.thumbnail}
                   iconOnly={server.iconOnly}
                   active={activeServerSlug === server.slug}
-                  serverLink={() => onSelectServer(server.slug)}
+                  serverLink={() => {
+                    trackEvent("project_open", {
+                      project: server.slug,
+                      source: "sidebar",
+                    });
+                    onSelectServer(server.slug);
+                  }}
                 ></Server>
               </div>
             );

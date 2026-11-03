@@ -57,6 +57,7 @@ export const ChannelList = ({
                   }}
                   disableHover={channel.disableHover}
                   active={channel.active}
+                  highlight={channel.highlight}
                 ></Channel>
               </li>
             );

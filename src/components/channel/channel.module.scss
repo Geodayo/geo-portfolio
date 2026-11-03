@@ -108,3 +108,9 @@
 .active .text {
   color: white !important;
 }
+
+// Stays orange through hover/active, which only recolor .text itself.
+.highlight {
+  color: #f5873d;
+  font-weight: 700;
+}

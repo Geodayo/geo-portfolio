@@ -9,6 +9,21 @@ export interface ChannelProps {
   /** DOM id, so this channel can be a pointer-arrow target (see
    * usePointerTarget) — set by whoever renders the channel list. */
   id?: string;
+  /** A word within `text` to call out in an accent color (e.g. "Featured"
+   * in "PDPC Featured"). Purely visual — the slug still comes from `text`. */
+  highlight?: string;
+}
+
+function renderText(text: string, highlight?: string) {
+  const at = highlight ? text.indexOf(highlight) : -1;
+  if (!highlight || at === -1) return text;
+  return (
+    <>
+      {text.slice(0, at)}
+      <span className={styles.highlight}>{highlight}</span>
+      {text.slice(at + highlight.length)}
+    </>
+  );
 }
 
 export const Channel = ({
@@ -17,6 +32,7 @@ export const Channel = ({
   channelLink,
   disableHover,
   id,
+  highlight,
 }: ChannelProps) => {
   return (
     <div
@@ -48,7 +64,7 @@ export const Channel = ({
               ></path>
             </svg>
           </div>
-          <div className={styles.text}>{text}</div>
+          <div className={styles.text}>{renderText(text, highlight)}</div>
         </div>
       </a>
     </div>

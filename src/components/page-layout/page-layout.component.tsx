@@ -62,6 +62,8 @@ export interface ServerSummary {
 export interface ServerChannel {
   text: string;
   active: boolean;
+  /** Word in `text` shown in an accent color — see Channel's `highlight`. */
+  highlight?: string;
   messages?: MessageProps[];
 }
 
@@ -585,6 +587,10 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
                   // at a time, but it keeps ids self-documenting.
                   id: `channel-${activeServerSlug ?? "home"}-${slugifyChannelText(channel.text)}`,
                   channelLink: () => {
+                    // On mobile the channel list and the chat share the
+                    // screen (mobileOpen = list showing, chat slid away), so
+                    // picking a channel slides the chat back in.
+                    setMobileOpen(false);
                     setSelectedChannelSlug(slugifyChannelText(channel.text));
                     onSelectChannel(slugifyChannelText(channel.text));
                   },
@@ -612,6 +618,7 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
             active={false}
             disableHover={true}
             text={activeChannel?.text ?? ""}
+            highlight={activeChannel?.highlight}
             channelLink={() => void 0}
           ></Channel>
         </div>

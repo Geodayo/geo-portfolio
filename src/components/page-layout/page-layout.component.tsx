@@ -585,6 +585,10 @@ export const PageLayout = ({ servers, activeServerSlug, activeServerData, frontP
                   // at a time, but it keeps ids self-documenting.
                   id: `channel-${activeServerSlug ?? "home"}-${slugifyChannelText(channel.text)}`,
                   channelLink: () => {
+                    // On mobile the channel list and the chat share the
+                    // screen (mobileOpen = list showing, chat slid away), so
+                    // picking a channel slides the chat back in.
+                    setMobileOpen(false);
                     setSelectedChannelSlug(slugifyChannelText(channel.text));
                     onSelectChannel(slugifyChannelText(channel.text));
                   },

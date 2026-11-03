@@ -57,6 +57,7 @@
     },
     {
       "text": "PDPC Featured",
+      "highlight": "Featured",
       "active": false,
       "messages": [
         {
@@ -89,7 +90,7 @@
         {
           "headless": false,
           "messageText": [
-            "Still in playtesting, so more to come!"
+            "Still in playtesting, so more to come! Want to give it a spin? You can try it out here: https://pdpc.geo.us.com"
           ]
         }
       ]

@@ -56,6 +56,45 @@
       ]
     },
     {
+      "text": "PDPC Featured",
+      "active": false,
+      "messages": [
+        {
+          "headless": false,
+          "messageText": [
+            "Something I've been working on lately: Privacy Fortress, a card game about personal data protection.",
+            "It plays a little like mahjong. You build sets from a hand of icon cards, while event cards, quick privacy quizzes, and function cards keep shaking things up."
+          ]
+        },
+        {
+          "headless": false,
+          "messageText": [
+            "It's built in Godot with the Cynda team, runs right in the browser, and works in both English and Traditional Chinese.",
+            "Here's a peek:"
+          ]
+        },
+        {
+          "headless": true,
+          "type": "gallery",
+          "gallery": [
+            "/images/pdpc-1.png",
+            "/images/pdpc-2.png",
+            "/images/pdpc-3.png",
+            "/images/pdpc-4.png",
+            "/images/pdpc-5.png",
+            "/images/pdpc-6.png",
+            "/images/pdpc-7.png"
+          ]
+        },
+        {
+          "headless": false,
+          "messageText": [
+            "Still in playtesting, so more to come!"
+          ]
+        }
+      ]
+    },
+    {
       "text": "directory",
       "active": false,
       "messages": [
